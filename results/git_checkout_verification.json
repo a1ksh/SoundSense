@@ -1,0 +1,14 @@
+{
+  "passed": true,
+  "byte_exact_artifacts": [
+    "results/history/mlp.csv",
+    "results/history/cnn.csv",
+    "results/predictions/mlp_test.csv",
+    "results/predictions/cnn_test.csv",
+    "models/mlp_best.pt",
+    "models/cnn_best.pt"
+  ],
+  "normalized_source_identities": 4,
+  "training_resume_signatures": 2,
+  "checkout_test": "Git filters with core.autocrlf=true"
+}

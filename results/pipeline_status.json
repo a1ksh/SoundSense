@@ -1,0 +1,62 @@
+{
+  "success": true,
+  "started_utc": "2026-10-27T15:19:02.908648+00:00",
+  "stages": {
+    "download_validate": {
+      "success": true,
+      "seconds": 1.6567261000163853
+    },
+    "preprocess": {
+      "success": true,
+      "seconds": 0.2093849999946542
+    },
+    "train_mlp": {
+      "success": true,
+      "seconds": 0.03751399996690452
+    },
+    "train_cnn": {
+      "success": true,
+      "seconds": 0.014863099961075932
+    },
+    "test_inference_mlp": {
+      "success": true,
+      "seconds": 0.04386330000124872
+    },
+    "metrics_mlp": {
+      "success": true,
+      "seconds": 0.23595980001846328
+    },
+    "test_inference_cnn": {
+      "success": true,
+      "seconds": 0.022329899948090315
+    },
+    "metrics_cnn": {
+      "success": true,
+      "seconds": 0.17417529999511316
+    },
+    "figures": {
+      "success": true,
+      "seconds": 38.10734190000221
+    },
+    "documentation": {
+      "success": true,
+      "seconds": 0.046087599999736995
+    },
+    "pytest": {
+      "success": true,
+      "seconds": 20.916804799984675
+    },
+    "gradio_http_smoke": {
+      "success": true,
+      "seconds": 11.97017980000237
+    },
+    "artifact_audit": {
+      "success": true,
+      "seconds": 0.1421316000050865
+    }
+  },
+  "force_train": false,
+  "figure_count": 20,
+  "finished_utc": "2026-10-27T15:20:25.968364+00:00",
+  "seconds": 83.05567750002956
+}

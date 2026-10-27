@@ -1,0 +1,17 @@
+{
+  "model": "mlp",
+  "signature": "eb4c1ed45391692138e486aeb397aa538606eb64705e5a3dffaa8da336216edf",
+  "epochs_completed": 19,
+  "best_epoch": 12,
+  "best_validation_loss": 1.1863320469856262,
+  "training_seconds": 6.545562100014649,
+  "batch_size": 16,
+  "parameter_count": 1057610,
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "checkpoint_sha256": "c30e0a28616838706b561565a704e4271d86126fef29b9d46ad588aec26d30b8",
+  "history_sha256": "1949687adf5679d587cc956cae8498507f4d0c383e3c2dd7bf3f503f52cd4acc",
+  "seed": 42,
+  "complete": true,
+  "torch_version": "2.7.1+cu126"
+}

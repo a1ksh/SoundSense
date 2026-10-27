@@ -1,0 +1,29 @@
+seed: 42
+dataset:
+  repository: karolpiczak/ESC-50
+  revision: master
+preprocessing:
+  sample_rate: 16000
+  duration_seconds: 5
+  n_fft: 1024
+  hop_length: 512
+  n_mels: 64
+  time_frames: 128
+  fmin: 0
+  fmax: 8000
+  top_db: 80
+training:
+  max_epochs: 35
+  patience: 7
+  batch_size: 16
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  num_workers: 0
+  cpu_threads: 4
+models:
+  mlp:
+    hidden: [128, 64]
+    dropout: 0.4
+  cnn:
+    channels: [16, 32, 64]
+    dropout: 0.3

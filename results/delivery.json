@@ -1,0 +1,13 @@
+{
+  "push_verified": false,
+  "repository": "https://github.com/a1ksh/SoundSense",
+  "remote": "https://github.com/a1ksh/SoundSense.git",
+  "branch": "main",
+  "private_confirmed": true,
+  "raw_wav_local_count": 400,
+  "raw_wav_uploaded": false,
+  "lfs_used": false,
+  "reason": "Remaining free LFS quota and zero overage spending could not be verified (billing API HTTP 404). Raw WAVs stay local and ignored by Git; no LFS upload or paid resource was initiated.",
+  "committed_data_reproduction": ["data/metadata/manifest.csv", "data/metadata/attributions.csv", "data/metadata/LICENSE", "data/metadata/provenance.json", "data/metadata/source_lock.json", "soundsense/download_data.py"],
+  "status": "Local implementation and results ready; push verification pending"
+}

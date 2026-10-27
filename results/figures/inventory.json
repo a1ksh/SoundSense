@@ -1,0 +1,202 @@
+[
+  {
+    "file": "results/figures/audio_waveform_examples.png",
+    "width": 3796,
+    "height": 4096,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "2eff3b5c930c099a09004d0a970107ecbe6a17a73aa1239eb3bae81c1f3379ea"
+  },
+  {
+    "file": "results/figures/class_distribution.png",
+    "width": 3196,
+    "height": 1398,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "4be05581e74e7cf264d7ec49bc734efd27b6779bb1e7e1a5025d1b71517e9d81"
+  },
+  {
+    "file": "results/figures/cnn_accuracy_curve.png",
+    "width": 2296,
+    "height": 1338,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "bd373515cbab1fdafcd1a86ce6ec380ac5322e309b6e426af4884683163b216f"
+  },
+  {
+    "file": "results/figures/cnn_confusion_matrix.png",
+    "width": 2742,
+    "height": 2403,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "9a725e2c5847b0a65b035a093269e7c221ad48e1de68680addfc4d3c957d8859"
+  },
+  {
+    "file": "results/figures/cnn_confusion_matrix_normalized.png",
+    "width": 2777,
+    "height": 2403,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "8370256e52f5c39b09a7ef08c56a55666926143131e52b4241e9c84a020f8420"
+  },
+  {
+    "file": "results/figures/cnn_loss_curve.png",
+    "width": 2297,
+    "height": 1337,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "e47f07548212b54a5718a2d6455ccd4c22723a9ee725139be07f519caf9b85b6"
+  },
+  {
+    "file": "results/figures/cnn_prediction_confidence.png",
+    "width": 2597,
+    "height": 1399,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "a26e22ba4cf2c72d78073241924af648ff6f5589b52bfb5c088a3ffcbb69d726"
+  },
+  {
+    "file": "results/figures/error_analysis_examples.png",
+    "width": 3743,
+    "height": 3214,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "6b5e33b63935e495eaf54163ed30111abc6b786bdc944a4166376369da4443fb"
+  },
+  {
+    "file": "results/figures/mel_spectrogram_examples.png",
+    "width": 3734,
+    "height": 4096,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "f190748a68c0b8d8da7a668f8bfdba3a641400490f1784dd64405cd267e5f48a"
+  },
+  {
+    "file": "results/figures/mlp_accuracy_curve.png",
+    "width": 2296,
+    "height": 1338,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "73f4aba4ebcf404efffd47ebe0fdcc72ed1b3507ab3f621740d554f4aaa83804"
+  },
+  {
+    "file": "results/figures/mlp_confusion_matrix.png",
+    "width": 2742,
+    "height": 2403,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "46db7afa22cb94fe261242778250e36e5aacde6a6a616a448d9754f5f64b41aa"
+  },
+  {
+    "file": "results/figures/mlp_confusion_matrix_normalized.png",
+    "width": 2777,
+    "height": 2403,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "85bb9cdf63f46288f06a9cb204d6331c55d9de46228af5af5dd5ccb67ed42d15"
+  },
+  {
+    "file": "results/figures/mlp_loss_curve.png",
+    "width": 2297,
+    "height": 1337,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "18189f63ec3083e27af293127aab3b335b580bce9a8ce674e8fc7d0e1d19385f"
+  },
+  {
+    "file": "results/figures/mlp_precision_recall_per_class.png",
+    "width": 3193,
+    "height": 1997,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "7e7b930ca801cf1f511ce4dfdfd797312b485d3ab0a528b7f0fc548af2f54e29"
+  },
+  {
+    "file": "results/figures/mlp_roc_curves_per_class.png",
+    "width": 3193,
+    "height": 1997,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "1cf3c60cdfc33cdb535e7aef92a365be22e2cb44d8fd03c42606461c3a9cf57e"
+  },
+  {
+    "file": "results/figures/model_metrics_comparison.png",
+    "width": 3496,
+    "height": 1395,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "30bfd7cb3e101da720145838e76337a082c437369347bb42b2dc65a0a3acbff0"
+  },
+  {
+    "file": "results/figures/models_training_comparison.png",
+    "width": 3797,
+    "height": 1390,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "6f7609dd33cddad1967b7596d4c9d1abcaf205a0de061ce3790916688d32161b"
+  },
+  {
+    "file": "results/figures/per_class_f1_comparison.png",
+    "width": 3196,
+    "height": 1398,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "e04812206034e69f56d140f074c04c10c7abae4517402e7b6aba5338e8d1b5b1"
+  },
+  {
+    "file": "results/figures/precision_recall_per_class.png",
+    "width": 3193,
+    "height": 1997,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "defb5066a2ab888cfc1a91a23aba7b6b1aeb83900bc677494d321295e35f7a03"
+  },
+  {
+    "file": "results/figures/roc_curves_per_class.png",
+    "width": 3193,
+    "height": 1997,
+    "dpi": [
+      299.9994,
+      299.9994
+    ],
+    "sha256": "0df8130c2373059e95ce685782b6fbfc4889de48c50c007261b5ff8138cb7dad"
+  }
+]

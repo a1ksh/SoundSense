@@ -1,0 +1,19 @@
+{
+  "signature": "e43854e9992f45fabc63d4c10482e1a724ad1dde72f26f16f4be95755f3c4862",
+  "checkpoint_sha256": "fd1fa681a2de2c1fbbec910a9a51abea3a58956e68dc98029afefab50f87b575",
+  "csv_sha256": "4da2d4e238f1f7d39a62839c1acccbea17fa78efcd6892905b59b8005317e2be",
+  "count": 80,
+  "fold": 5,
+  "probability_order": [
+    "dog",
+    "rooster",
+    "rain",
+    "sea_waves",
+    "crackling_fire",
+    "crying_baby",
+    "sneezing",
+    "clock_tick",
+    "helicopter",
+    "chainsaw"
+  ]
+}

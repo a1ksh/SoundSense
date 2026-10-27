@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+data/cache/
+data/raw/
+*.part
+*.tmp
+.env
+.env.*
+Thumbs.db
+.DS_Store
+results/logs/
+results/delivery_receipt.local.json

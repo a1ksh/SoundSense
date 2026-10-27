@@ -1,0 +1,52 @@
+[
+  {
+    "index": 0,
+    "esc50_target": 0,
+    "label": "dog"
+  },
+  {
+    "index": 1,
+    "esc50_target": 1,
+    "label": "rooster"
+  },
+  {
+    "index": 2,
+    "esc50_target": 10,
+    "label": "rain"
+  },
+  {
+    "index": 3,
+    "esc50_target": 11,
+    "label": "sea_waves"
+  },
+  {
+    "index": 4,
+    "esc50_target": 12,
+    "label": "crackling_fire"
+  },
+  {
+    "index": 5,
+    "esc50_target": 20,
+    "label": "crying_baby"
+  },
+  {
+    "index": 6,
+    "esc50_target": 21,
+    "label": "sneezing"
+  },
+  {
+    "index": 7,
+    "esc50_target": 38,
+    "label": "clock_tick"
+  },
+  {
+    "index": 8,
+    "esc50_target": 40,
+    "label": "helicopter"
+  },
+  {
+    "index": 9,
+    "esc50_target": 41,
+    "label": "chainsaw"
+  }
+]
