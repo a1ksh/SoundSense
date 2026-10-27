@@ -1,0 +1,166 @@
+{
+  "passed": true,
+  "formats": [
+    {
+      "extension": ".wav",
+      "codec": "pcm_s16le",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".wave",
+      "codec": "pcm_s16le",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".mp3",
+      "codec": "libmp3lame",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".m4a",
+      "codec": "aac",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".aac",
+      "codec": "aac",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".flac",
+      "codec": "flac",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".ogg",
+      "codec": "libvorbis",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".oga",
+      "codec": "libvorbis",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".opus",
+      "codec": "libopus",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".aiff",
+      "codec": "pcm_s16be",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".aif",
+      "codec": "pcm_s16be",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".wma",
+      "codec": "wmav2",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".webm",
+      "codec": "libopus",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".mp4",
+      "codec": "aac",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".caf",
+      "codec": "pcm_s16le",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    },
+    {
+      "extension": ".au",
+      "codec": "pcm_s16be",
+      "passed": true,
+      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_outputs": 5,
+      "preview_sample_rate": 16000,
+      "preview_frames": 80000
+    }
+  ],
+  "format_count": 16,
+  "uppercase_extension_api": true,
+  "unicode_and_spaces_in_filenames": true,
+  "source_audio": "1-100032-A-0.wav",
+  "source_split": "train",
+  "public_share": false,
+  "server_closed": true,
+  "training_repeated": false,
+  "held_out_test_inference_repeated": false,
+  "checkpoint_sha256": {
+    "mlp": "c30e0a28616838706b561565a704e4271d86126fef29b9d46ad588aec26d30b8",
+    "cnn": "fd1fa681a2de2c1fbbec910a9a51abea3a58956e68dc98029afefab50f87b575"
+  },
+  "test_access_audit_sha256": "f569e98124e09323657b0245e074dcc5c03d2ab8f09d4c1f2a1522bcd1ff25f4",
+  "imageio_ffmpeg": "0.6.0",
+  "ffmpeg_version": "ffmpeg version 7.1-essentials_build-www.gyan.dev Copyright (c) 2000-2024 the FFmpeg developers",
+  "pytest_log": "results/audio_formats_pytest.txt"
+}

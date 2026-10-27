@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from soundsense.infer import KAZAKH, Predictor
+from soundsense.audio import FORMAT_LABEL, SUPPORTED_EXTENSIONS
 
 
 def create_app(checkpoint=None):
@@ -33,22 +34,25 @@ def create_app(checkpoint=None):
         top3 = {f'{KAZAKH.get(k, k)} ({k})': v for k, v in result['top3'].items()}
         plt.close(waveform)
         plt.close(mel)
-        return f'{result["kazakh_label"]} ({result["label"]})', top3, waveform, mel
+        return f'{result["kazakh_label"]} ({result["label"]})', top3, waveform, mel, (result['sample_rate'], result['waveform'])
 
     with gr.Blocks(title='SoundSense · ESC-10') as demo:
         gr.Markdown('# SoundSense\nҚоршаған орта дыбыстарын жіктеу · ESC-10 CNN')
         gr.Markdown('Модель тек ESC-10 деректерінің 10 санатын таниды. Өзге дыбыстарды қате жіктеуі мүмкін. '
                     'Softmax ықтималдығы калибрленген сенімділік өлшемі емес. Ұзақ файлдың алғашқы 5 секунды өңделеді.')
-        audio = gr.Audio(type='filepath', sources=['upload'], label='Аудиофайл (.wav және қолдау көрсетілетін форматтар)')
+        gr.Markdown(f'**Қолдау көрсетілетін форматтар:** {FORMAT_LABEL}. '
+                    'MP4/WEBM файлдарынан алғашқы аудиожол алынады. Файл көлемі: 100 МБ-қа дейін.')
+        audio = gr.File(type='filepath', file_types=list(SUPPORTED_EXTENSIONS), label='Аудио немесе дыбысы бар файл жүктеңіз')
         button = gr.Button('Дыбысты жіктеу', variant='primary')
         label = gr.Textbox(label='Болжанған санат')
         top3 = gr.Label(num_top_classes=3, label='Үздік үш санат')
+        preview = gr.Audio(label='Тыңдау — өңделген алғашқы 5 секунд', interactive=False, format='wav')
         with gr.Row():
             waveform = gr.Plot(label='Толқын пішіні')
             mel = gr.Plot(label='Mel-спектрограмма')
-        button.click(classify, audio, [label, top3, waveform, mel], api_name='predict')
+        button.click(classify, audio, [label, top3, waveform, mel, preview], api_name='predict')
     return demo
 
 
 if __name__ == '__main__':
-    create_app().launch(server_name='127.0.0.1', share=False, inbrowser=False)
+    create_app().launch(server_name='127.0.0.1', share=False, inbrowser=False, max_file_size='100mb')

@@ -3,8 +3,9 @@ import numpy as np
 import torch
 
 from .common import ROOT
+from .audio import load_uploaded_audio
 from .evaluate import load_checkpoint
-from .preprocess import load_audio, logmel, standardize
+from .preprocess import logmel, standardize
 
 KAZAKH = {'dog': 'Иттің үруі', 'rain': 'Жаңбыр', 'sea_waves': 'Теңіз толқындары',
           'crying_baby': 'Сәбидің жылауы', 'clock_tick': 'Сағат тықылы', 'sneezing': 'Түшкіру',
@@ -19,7 +20,7 @@ class Predictor:
 
     def predict(self, path):
         cfg = self.metadata['preprocessing']
-        y = load_audio(path, cfg)
+        y = load_uploaded_audio(path, cfg)
         mel = logmel(y, cfg)
         x = standardize(mel, self.metadata['statistics'])
         with torch.inference_mode():

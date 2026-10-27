@@ -19,11 +19,11 @@ def gradio_smoke():
                                 prevent_thread_lock=True, quiet=True)
         client = Client(url, verbose=False)
         output = client.predict(handle_file(str(path)), api_name='/predict')
-        if len(output) != 4 or not output[0] or not output[1]:
+        if len(output) != 5 or not output[0] or not output[1] or not output[4]:
             raise RuntimeError('Unexpected Gradio prediction response')
         result = {'passed': True, 'transport': 'local HTTP and Gradio prediction API',
                   'input': row.filename, 'split': 'train', 'predicted_label': output[0],
-                  'outputs': 4, 'server_closed': True, 'public_share': False}
+                  'outputs': 5, 'server_closed': True, 'public_share': False}
     finally:
         demo.close()
     write_json(ROOT / 'results/gradio_smoke.json', result)
