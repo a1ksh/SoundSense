@@ -41,6 +41,8 @@ CPU үшін wheel индексін `https://download.pytorch.org/whl/cpu` де�
 
 Checkpoint файлдары: [`models/mlp_best.pt`](models/mlp_best.pt), [`models/cnn_best.pt`](models/cnn_best.pt). Қолданба dataset/cache талап етпейді, тек CNN checkpoint қажет. Тек сенімді жергілікті checkpoint жүктеңіз.
 
+Қазақша интерфейс ашық фон, күлгін акценттер және қара-күлгін талдау карточкасы бар бақылау тақтасы түрінде жасалған. Мәзірден талдауға, графиктерге және нұсқаулыққа өтуге болады. [Интерфейс туралы](docs/interface_kk.md).
+
 ## Деректердің шығуы және лицензиясы
 
 [Ресми ESC-50](https://github.com/karolpiczak/ESC-50) метадерегінен **тек 400 ESC-10 WAV** алынды; барлық 2000 аудио жүктелмейді. Upstream commit `33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6` бекітілген. ESC-10 — **CC BY 3.0**; ESC-50 толық жиыны — CC BY-NC. Түпнұсқа [LICENSE](data/metadata/LICENSE), [400 файлдың авторлары мен Freesound сілтемелері](data/metadata/attributions.csv), [SHA-256 manifest](data/metadata/manifest.csv), [provenance](data/metadata/provenance.json) сақталған. Қайта таратқанда авторлар мен лицензия сақталуы тиіс. Raw файлдар LFS квотасы расталмаса Git-ке енгізілмейді; downloader оларды дәл қайта алады.

@@ -5,7 +5,7 @@
       "extension": ".wav",
       "codec": "pcm_s16le",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -14,7 +14,7 @@
       "extension": ".wave",
       "codec": "pcm_s16le",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -23,7 +23,7 @@
       "extension": ".mp3",
       "codec": "libmp3lame",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -32,7 +32,7 @@
       "extension": ".m4a",
       "codec": "aac",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -41,7 +41,7 @@
       "extension": ".aac",
       "codec": "aac",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -50,7 +50,7 @@
       "extension": ".flac",
       "codec": "flac",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -59,7 +59,7 @@
       "extension": ".ogg",
       "codec": "libvorbis",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -68,7 +68,7 @@
       "extension": ".oga",
       "codec": "libvorbis",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -77,7 +77,7 @@
       "extension": ".opus",
       "codec": "libopus",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -86,7 +86,7 @@
       "extension": ".aiff",
       "codec": "pcm_s16be",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -95,7 +95,7 @@
       "extension": ".aif",
       "codec": "pcm_s16be",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -104,7 +104,7 @@
       "extension": ".wma",
       "codec": "wmav2",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -113,7 +113,7 @@
       "extension": ".webm",
       "codec": "libopus",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -122,7 +122,7 @@
       "extension": ".mp4",
       "codec": "aac",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -131,7 +131,7 @@
       "extension": ".caf",
       "codec": "pcm_s16le",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000
@@ -140,7 +140,7 @@
       "extension": ".au",
       "codec": "pcm_s16be",
       "passed": true,
-      "api_predicted_label": "Түшкіру (sneezing)",
+      "api_predicted_label": "Түшкіру",
       "api_outputs": 5,
       "preview_sample_rate": 16000,
       "preview_frames": 80000

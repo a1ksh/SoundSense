@@ -9,7 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from soundsense.infer import KAZAKH, Predictor
-from soundsense.audio import FORMAT_LABEL, SUPPORTED_EXTENSIONS
+from soundsense.audio import SUPPORTED_EXTENSIONS
+from soundsense import interface as ui
 
 
 def create_app(checkpoint=None):
@@ -21,36 +22,73 @@ def create_app(checkpoint=None):
         try:
             result = predictor.predict(path)
         except (ValueError, RuntimeError, OSError) as exc:
-            raise gr.Error(f'Аудиофайлды өңдеу мүмкін болмады: {exc}') from exc
-        waveform, ax = plt.subplots(figsize=(9, 2.8))
-        ax.plot(np.arange(len(result['waveform'])) / result['sample_rate'], result['waveform'], linewidth=.5, color='#16697a')
-        ax.set(xlabel='Time (s)', ylabel='Amplitude', title='Uploaded audio · first five seconds (zero-padded if short)')
+            message = str(exc)
+            if message == 'Audio must be nonempty and finite':
+                message = 'Аудио бос болмауы және жарамды сандық үлгілерден тұруы тиіс.'
+            raise gr.Error(f'Аудиофайлды өңдеу мүмкін болмады: {message}') from exc
+        waveform, ax = plt.subplots(figsize=(8, 2.7), facecolor='#fbfaff')
+        ax.set_facecolor('#fbfaff')
+        ax.plot(np.arange(len(result['waveform'])) / result['sample_rate'], result['waveform'], linewidth=.6, color='#8463db')
+        ax.set(xlabel='Уақыт (с)', ylabel='Амплитуда', xlim=(0, 5))
+        ax.spines[['top', 'right']].set_visible(False)
+        ax.spines[['bottom', 'left']].set_color('#ddd5eb')
+        ax.tick_params(colors='#988ba9', labelsize=9)
+        ax.xaxis.label.set_color('#8b7d9d')
+        ax.yaxis.label.set_color('#8b7d9d')
+        ax.grid(axis='y', color='#eae4f2', linewidth=.5)
         waveform.tight_layout()
-        mel, ax = plt.subplots(figsize=(9, 3.2))
+        mel, ax = plt.subplots(figsize=(8, 2.7), facecolor='#fbfaff')
         im = ax.imshow(result['mel'], origin='lower', aspect='auto', extent=[0, 5, 0, 64], cmap='magma')
-        ax.set(xlabel='Time (s)', ylabel='Mel band', title='64-band log-Mel representation')
-        mel.colorbar(im, ax=ax, label='dB (reference power = 1)')
+        ax.set(xlabel='Уақыт (с)', ylabel='Мел жолағы')
+        ax.tick_params(colors='#988ba9', labelsize=9)
+        ax.xaxis.label.set_color('#8b7d9d')
+        ax.yaxis.label.set_color('#8b7d9d')
+        colorbar = mel.colorbar(im, ax=ax, label='Қуат (дБ)')
+        colorbar.ax.tick_params(colors='#988ba9', labelsize=8)
+        colorbar.ax.yaxis.label.set_color('#8b7d9d')
+        colorbar.outline.set_visible(False)
         mel.tight_layout()
-        top3 = {f'{KAZAKH.get(k, k)} ({k})': v for k, v in result['top3'].items()}
+        top3 = {KAZAKH.get(k, k): v for k, v in result['top3'].items()}
         plt.close(waveform)
         plt.close(mel)
-        return f'{result["kazakh_label"]} ({result["label"]})', top3, waveform, mel, (result['sample_rate'], result['waveform'])
+        return result['kazakh_label'], top3, waveform, mel, (result['sample_rate'], result['waveform'])
 
-    with gr.Blocks(title='SoundSense · ESC-10') as demo:
-        gr.Markdown('# SoundSense\nҚоршаған орта дыбыстарын жіктеу · ESC-10 CNN')
-        gr.Markdown('Модель тек ESC-10 деректерінің 10 санатын таниды. Өзге дыбыстарды қате жіктеуі мүмкін. '
-                    'Softmax ықтималдығы калибрленген сенімділік өлшемі емес. Ұзақ файлдың алғашқы 5 секунды өңделеді.')
-        gr.Markdown(f'**Қолдау көрсетілетін форматтар:** {FORMAT_LABEL}. '
-                    'MP4/WEBM файлдарынан алғашқы аудиожол алынады. Файл көлемі: 100 МБ-қа дейін.')
-        audio = gr.File(type='filepath', file_types=list(SUPPORTED_EXTENSIONS), label='Аудио немесе дыбысы бар файл жүктеңіз')
-        button = gr.Button('Дыбысты жіктеу', variant='primary')
-        label = gr.Textbox(label='Болжанған санат')
-        top3 = gr.Label(num_top_classes=3, label='Үздік үш санат')
-        preview = gr.Audio(label='Тыңдау — өңделген алғашқы 5 секунд', interactive=False, format='wav')
-        with gr.Row():
-            waveform = gr.Plot(label='Толқын пішіні')
-            mel = gr.Plot(label='Mel-спектрограмма')
-        button.click(classify, audio, [label, top3, waveform, mel, preview], api_name='predict')
+    theme = gr.themes.Base(primary_hue='violet', neutral_hue='slate', font=['Segoe UI', 'Arial', 'sans-serif'])
+    with gr.Blocks(title='SoundSense — Дыбысты тану', theme=theme, css=ui.CSS, js=ui.JS, analytics_enabled=False) as demo:
+        gr.HTML(ui.HEADER)
+        gr.HTML(ui.INTRO)
+        gr.HTML(ui.STATS)
+        with gr.Column(elem_id='analysis'):
+            gr.HTML(ui.BOARD_HEADING)
+            with gr.Row(elem_id='workspace'):
+                with gr.Column(scale=4, elem_id='upload-column'):
+                    gr.HTML(ui.UPLOAD_HEADING)
+                    audio = gr.File(type='filepath', file_types=list(SUPPORTED_EXTENSIONS),
+                                    label='Аудиофайл жүктеу', show_label=False, elem_id='audio-upload')
+                    gr.HTML(ui.UPLOAD_NOTE)
+                    button = gr.Button('Дыбысты талдау  ↗', variant='primary', elem_id='analyze-button')
+                    gr.HTML(ui.LOCAL_NOTE)
+                with gr.Column(scale=6, elem_id='results'):
+                    gr.HTML(ui.RESULT_HEADING)
+                    gr.HTML(ui.RESULT_CAPTION)
+                    label = gr.Textbox(label='Болжанған санат', show_label=False, interactive=False,
+                                       placeholder='Әзірге нәтиже жоқ', container=False, elem_id='prediction-label')
+                    gr.HTML(ui.RESULT_SUBTITLE)
+                    top3 = gr.Label(num_top_classes=3, label='Үздік үш санат', show_label=False, elem_id='top-three')
+                    preview = gr.Audio(label='Тыңдау · алғашқы 5 секунд', interactive=False, format='wav', elem_id='audio-preview')
+                    gr.HTML(ui.PROBABILITY_NOTE)
+        with gr.Row(elem_id='visualizations'):
+            with gr.Column(elem_classes='ss-plot-card'):
+                gr.HTML(ui.plot_heading('wave'))
+                waveform = gr.Plot(label='Толқын пішіні', show_label=False, elem_classes='ss-plot')
+            with gr.Column(elem_classes='ss-plot-card'):
+                gr.HTML(ui.plot_heading('mel'))
+                mel = gr.Plot(label='Мел-спектрограмма', show_label=False, elem_classes='ss-plot')
+        gr.HTML(ui.GUIDE)
+        with gr.Accordion('Танылатын дыбыстар және ескеретін жайттар', open=False, elem_id='info'):
+            gr.Markdown(ui.NOTES)
+        gr.HTML(ui.BOTTOM)
+        button.click(classify, audio, [label, top3, waveform, mel, preview], api_name='predict', show_progress='minimal')
     return demo
 
 
