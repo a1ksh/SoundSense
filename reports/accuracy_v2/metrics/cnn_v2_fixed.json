@@ -1,0 +1,84 @@
+{
+  "count": 80,
+  "correct": 60,
+  "accuracy": 0.75,
+  "macro_f1": 0.7278798600780024,
+  "macro_roc_auc_ovr": 0.9838541666666666,
+  "macro_average_precision": 0.915750870014992,
+  "classification_report": {
+    "dog": {
+      "precision": 0.45454545454545453,
+      "recall": 0.625,
+      "f1-score": 0.5263157894736842,
+      "support": 8.0
+    },
+    "rooster": {
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1-score": 0.9411764705882353,
+      "support": 8.0
+    },
+    "rain": {
+      "precision": 0.5714285714285714,
+      "recall": 1.0,
+      "f1-score": 0.7272727272727273,
+      "support": 8.0
+    },
+    "sea_waves": {
+      "precision": 1.0,
+      "recall": 0.125,
+      "f1-score": 0.2222222222222222,
+      "support": 8.0
+    },
+    "crackling_fire": {
+      "precision": 0.8333333333333334,
+      "recall": 0.625,
+      "f1-score": 0.7142857142857143,
+      "support": 8.0
+    },
+    "crying_baby": {
+      "precision": 0.8888888888888888,
+      "recall": 1.0,
+      "f1-score": 0.9411764705882353,
+      "support": 8.0
+    },
+    "sneezing": {
+      "precision": 0.8333333333333334,
+      "recall": 0.625,
+      "f1-score": 0.7142857142857143,
+      "support": 8.0
+    },
+    "clock_tick": {
+      "precision": 0.8333333333333334,
+      "recall": 0.625,
+      "f1-score": 0.7142857142857143,
+      "support": 8.0
+    },
+    "helicopter": {
+      "precision": 0.7,
+      "recall": 0.875,
+      "f1-score": 0.7777777777777778,
+      "support": 8.0
+    },
+    "chainsaw": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 8.0
+    },
+    "accuracy": 0.75,
+    "macro avg": {
+      "precision": 0.8003751803751804,
+      "recall": 0.75,
+      "f1-score": 0.7278798600780024,
+      "support": 80.0
+    },
+    "weighted avg": {
+      "precision": 0.8003751803751804,
+      "recall": 0.75,
+      "f1-score": 0.7278798600780024,
+      "support": 80.0
+    }
+  },
+  "predictions_sha256": "2e8fc013ae27c7ddc54dfb566abbeaef12c477502795f887d9af0fa28a69f461"
+}

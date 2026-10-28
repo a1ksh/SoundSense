@@ -1,0 +1,16 @@
+                precision    recall  f1-score   support
+
+           dog     1.0000    1.0000    1.0000         8
+       rooster     1.0000    1.0000    1.0000         8
+          rain     0.8889    1.0000    0.9412         8
+     sea_waves     1.0000    1.0000    1.0000         8
+crackling_fire     1.0000    0.7500    0.8571         8
+   crying_baby     1.0000    1.0000    1.0000         8
+      sneezing     1.0000    1.0000    1.0000         8
+    clock_tick     1.0000    1.0000    1.0000         8
+    helicopter     0.8889    1.0000    0.9412         8
+      chainsaw     1.0000    1.0000    1.0000         8
+
+      accuracy                         0.9750        80
+     macro avg     0.9778    0.9750    0.9739        80
+  weighted avg     0.9778    0.9750    0.9739        80

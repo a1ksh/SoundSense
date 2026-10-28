@@ -1,0 +1,4 @@
+# Install into a separate environment; never into the baseline .venv.
+tensorflow==2.20.0
+numpy==2.2.6
+-r requirements-yamnet-components.txt

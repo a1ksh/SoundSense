@@ -11,16 +11,24 @@ import numpy as np
 from soundsense.infer import KAZAKH, Predictor
 from soundsense.audio import SUPPORTED_EXTENSIONS
 from soundsense import interface as ui
+from soundsense.common import ROOT
 
 
 def create_app(checkpoint=None):
     predictor = Predictor(checkpoint)
+    predictors = {'CNN v1 (baseline)': predictor}
+    v2_ready = (ROOT / 'models/accuracy_v2/best_v2.pt').is_file()
 
-    def classify(path):
+    def classify(path, model_name='CNN v1 (baseline)'):
         if path is None:
             raise gr.Error('Алдымен аудиофайл жүктеңіз.')
         try:
-            result = predictor.predict(path)
+            if model_name not in ('CNN v1 (baseline)', 'Best V2'):
+                raise ValueError('Белгісіз модель таңдалды.')
+            if model_name == 'Best V2' and model_name not in predictors:
+                from experiments.accuracy_v2.inference import V2Predictor
+                predictors[model_name] = V2Predictor()
+            result = predictors[model_name].predict(path)
         except (ValueError, RuntimeError, OSError) as exc:
             message = str(exc)
             if message == 'Audio must be nonempty and finite':
@@ -63,6 +71,9 @@ def create_app(checkpoint=None):
             with gr.Row(elem_id='workspace'):
                 with gr.Column(scale=4, elem_id='upload-column'):
                     gr.HTML(ui.UPLOAD_HEADING)
+                    model_selector = gr.Dropdown(choices=['CNN v1 (baseline)', 'Best V2'] if v2_ready else ['CNN v1 (baseline)'],
+                                                 value='Best V2' if v2_ready and checkpoint is None else 'CNN v1 (baseline)',
+                                                 label='Модель', interactive=True, elem_id='model-selector')
                     audio = gr.File(type='filepath', file_types=list(SUPPORTED_EXTENSIONS),
                                     label='Аудиофайл жүктеу', show_label=False, elem_id='audio-upload')
                     gr.HTML(ui.UPLOAD_NOTE)
@@ -88,7 +99,7 @@ def create_app(checkpoint=None):
         with gr.Accordion('Танылатын дыбыстар және ескеретін жайттар', open=False, elem_id='info'):
             gr.Markdown(ui.NOTES)
         gr.HTML(ui.BOTTOM)
-        button.click(classify, audio, [label, top3, waveform, mel, preview], api_name='predict', show_progress='minimal')
+        button.click(classify, [audio, model_selector], [label, top3, waveform, mel, preview], api_name='predict', show_progress='minimal')
     return demo
 
 

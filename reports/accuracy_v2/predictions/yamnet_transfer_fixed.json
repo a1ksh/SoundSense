@@ -1,0 +1,22 @@
+{
+  "checkpoint_sha256": "56ee289dee49c4af93ce9da992913ce24391d65a186324ad4168f9d2e3b2df4a",
+  "csv_sha256": "d9346656130f969c629da1fdc2d537b0673a9f5fff6681e5adef7ef3755d94ad",
+  "test_fold": 5,
+  "count": 80,
+  "probability_order": [
+    "dog",
+    "rooster",
+    "rain",
+    "sea_waves",
+    "crackling_fire",
+    "crying_baby",
+    "sneezing",
+    "clock_tick",
+    "helicopter",
+    "chainsaw"
+  ],
+  "head_or_cnn_seconds_per_clip": 0.00011035249917767942,
+  "timing_excludes_frozen_feature_extraction": true,
+  "exploratory": true,
+  "evaluation_calls": 1
+}

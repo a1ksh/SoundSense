@@ -1,0 +1,11 @@
+cnn_v2: end-to-end verified, 0.023 seconds
+efficientnet_b0_mel: end-to-end verified, 0.139 seconds
+yamnet_transfer: end-to-end verified, 41.885 seconds
+C:\Users\nurda\Downloads\SoundSense\SoundSense\.venv\Lib\site-packages\gradio\processing_utils.py:688: UserWarning: Trying to convert audio automatically from float32 to 16-bit int format.
+  warnings.warn(warning.format(data.dtype))
+C:\Users\nurda\Downloads\SoundSense\SoundSense\.venv\Lib\site-packages\gradio\processing_utils.py:688: UserWarning: Trying to convert audio automatically from float32 to 16-bit int format.
+  warnings.warn(warning.format(data.dtype))
+C:\Users\nurda\Downloads\SoundSense\SoundSense\.venv\Lib\site-packages\gradio\processing_utils.py:688: UserWarning: Trying to convert audio automatically from float32 to 16-bit int format.
+  warnings.warn(warning.format(data.dtype))
+Closing server running on port: 7860
+Both Gradio models and default API verified; server closed

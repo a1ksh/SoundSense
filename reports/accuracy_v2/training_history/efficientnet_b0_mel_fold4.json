@@ -1,0 +1,20 @@
+{
+  "name": "efficientnet_b0_mel",
+  "run_id": "efficientnet_b0_mel_fold4",
+  "signature": "95d02662e095da44ece1a3d175fb077a8c21e28c500d35c6810cd63ed14fe4ad",
+  "checkpoint": "models\\accuracy_v2\\efficientnet_b0_mel_fold4.pt",
+  "checkpoint_sha256": "8ca86acbfac385f6fc81892cc6fd169ea3224d61e95a02a9c90c8d83ef5b7bde",
+  "history_sha256": "4520901dee6dca94eca6e65795c6d103ea76bca8c99fc0c00745f9fd394d4653",
+  "epochs_completed": 27,
+  "best_epoch": 7,
+  "validation_loss": 0.4098044693470001,
+  "validation_accuracy": 0.8875,
+  "training_seconds": 3.9968409000430256,
+  "feature_extraction_seconds": 39.02761929994449,
+  "parameter_count": 12810,
+  "model_bytes": 78133,
+  "device": "cuda",
+  "peak_gpu_bytes": 68479488,
+  "test_fold": 4,
+  "complete": true
+}

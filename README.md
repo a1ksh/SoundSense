@@ -1,5 +1,48 @@
 # SoundSense
 
+GitHub: [a1ksh/SoundSense](https://github.com/a1ksh/SoundSense).
+
+**Accuracy V2:** бастапқы модельдер сақталған; жаңа CNN augmentation және
+ImageNet/YAMNet transfer тәжірибелері бөлек орындалады. Нақты нәтижелер:
+[`reports/accuracy_v2/report_kk.md`](reports/accuracy_v2/report_kk.md),
+[`methodology_kk.md`](reports/accuracy_v2/methodology_kk.md),
+[`comparison.csv`](reports/accuracy_v2/comparison.csv),
+[`5-fold CV`](reports/accuracy_v2/cross_validation_summary.json).
+Орнату, бөлек TensorFlow ортасы, CUDA/CPU және толық қайталау командалары:
+[`experiments/accuracy_v2/README.md`](experiments/accuracy_v2/README.md).
+Қолданбада `CNN v1 (baseline)` және validation бойынша таңдалған `Best V2` бар.
+
+| Модель | Fixed test дұрыс / барлығы | Accuracy | Macro-F1 |
+|---|---:|---:|---:|
+| CNN v1 baseline | 67/80 | 83.75% | 0.8350 |
+| CNN v2 augmentation | 60/80 | 75.00% | 0.7279 |
+| EfficientNet-B0 Mel | 73/80 | 91.25% | 0.9114 |
+| **YAMNet transfer — Best V2** | **78/80** | **97.50%** | **0.9739** |
+
+Ресми 5-fold OOF: **YAMNet 391/400 = 97.75%**, fold accuracy
+**97.75% ± 1.63 пайыздық тармақ**, aggregate macro-F1 **0.9775**;
+EfficientNet 354/400 = 88.50% ± 2.40 пайыздық тармақ, macro-F1 0.8849.
+± — бес fold бойынша sample SD, сенімділік интервалы емес. Fold 5 бұрын
+белгілі болғандықтан fixed split exploratory; CV кандидаттары validation
+арқылы таңдалған, толық nested model search емес. AudioSet pretraining
+көздерінің ESC-пен ықтимал қабаттасуы тексерілген жоқ. Нәтиже ESC-10-ға
+қатысты, белгісіз open-world дыбыстарға жалпылау дәлелденбеген.
+
+Жергілікті CPU тексеруінде Best V2 бір клипті шамамен **42 секундта** өңдеді:
+бөлек TensorFlow process-і әр талдауда іске қосылады. Бұл дәлдікке басымдық
+берілген нұсқа; бастапқы CNN v1 таңдауы да сақталған. Уақыт журналы:
+[`inference_verification.json`](reports/accuracy_v2/inference_verification.json).
+
+Осы checkout-та `.venv` base Python жоғалғандықтан қалпына келтірілген runtime:
+
+```powershell
+.\.runtime\python311\python.exe app.py
+.\.runtime\python311\python.exe -m pytest -q
+.\.runtime\python311\python.exe -m experiments.accuracy_v2.run --yamnet-python .runtime/yamnet311/python.exe --cv-top 2
+```
+
+Төмендегі MLP/CNN кестесі — сақталған **V1 baseline** нәтижелері.
+
 **Конволюциялық нейрондық желілер негізінде қоршаған орта дыбыстарын автоматты жіктеу жүйесін әзірлеу.** ESC-10 дыбыстарын 64×128 log-Mel арқылы жіктейтін MLP және ықшам CNN, нақты жергілікті оқыту, бағалау және Gradio қолданбасы.
 
 ## Нақты орындалған нәтиже

@@ -1,0 +1,2 @@
+# Must match the baseline torch==2.7.1 CUDA/CPU build.
+torchvision==0.22.1

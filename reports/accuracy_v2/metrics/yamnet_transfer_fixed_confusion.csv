@@ -1,0 +1,11 @@
+true_label,dog,rooster,rain,sea_waves,crackling_fire,crying_baby,sneezing,clock_tick,helicopter,chainsaw
+dog,8,0,0,0,0,0,0,0,0,0
+rooster,0,8,0,0,0,0,0,0,0,0
+rain,0,0,8,0,0,0,0,0,0,0
+sea_waves,0,0,0,8,0,0,0,0,0,0
+crackling_fire,0,0,1,0,6,0,0,0,1,0
+crying_baby,0,0,0,0,0,8,0,0,0,0
+sneezing,0,0,0,0,0,0,8,0,0,0
+clock_tick,0,0,0,0,0,0,0,8,0,0
+helicopter,0,0,0,0,0,0,0,0,8,0
+chainsaw,0,0,0,0,0,0,0,0,0,8

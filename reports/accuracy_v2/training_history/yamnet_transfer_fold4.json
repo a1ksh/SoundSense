@@ -1,0 +1,20 @@
+{
+  "name": "yamnet_transfer",
+  "run_id": "yamnet_transfer_fold4",
+  "signature": "1bdc10407ffbf5e05d542a4edaf24a2fdfbd498daaf6e03433524619232cff39",
+  "checkpoint": "models\\accuracy_v2\\yamnet_transfer_fold4.pt",
+  "checkpoint_sha256": "de906eae6665939b32cf459fc3194ab905afeea7b34346ed3939b3942c6bbd61",
+  "history_sha256": "f346ad29e8807c50219a055bd17c728ff8cce10eecb6324182dadc03f7be73fc",
+  "epochs_completed": 41,
+  "best_epoch": 16,
+  "validation_loss": 0.3988568067550659,
+  "validation_accuracy": 0.925,
+  "training_seconds": 6.061739400029182,
+  "feature_extraction_seconds": 76.04164139996283,
+  "parameter_count": 10250,
+  "model_bytes": 63189,
+  "device": "cuda",
+  "peak_gpu_bytes": 68416000,
+  "test_fold": 4,
+  "complete": true
+}

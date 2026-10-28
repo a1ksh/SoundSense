@@ -1,0 +1,24 @@
+{
+  "clips": 400,
+  "all_raw_sha256_match_manifest": true,
+  "classes": {
+    "chainsaw": 40,
+    "clock_tick": 40,
+    "crackling_fire": 40,
+    "crying_baby": 40,
+    "dog": 40,
+    "helicopter": 40,
+    "rain": 40,
+    "rooster": 40,
+    "sea_waves": 40,
+    "sneezing": 40
+  },
+  "folds": {
+    "1": 80,
+    "2": 80,
+    "3": 80,
+    "4": 80,
+    "5": 80
+  },
+  "sources_crossing_folds": 0
+}

@@ -1,4 +1,8 @@
 .venv/
+.venv-v2/
+.runtime/
+.venv-yamnet/
+data/accuracy_v2_cache/
 __pycache__/
 *.py[cod]
 .pytest_cache/
@@ -12,3 +16,4 @@ Thumbs.db
 .DS_Store
 results/logs/
 results/delivery_receipt.local.json
+reports/accuracy_v2/delivery.local.json

@@ -1,0 +1,14 @@
+{
+  "python": "3.11.9 (tags/v3.11.9:de54cf5, Apr  2 2024, 10:12:12) [MSC v.1938 64 bit (AMD64)]",
+  "packages": {
+    "tensorflow": "2.20.0",
+    "tensorflow-hub": "0.16.1",
+    "tf-keras": "2.20.1",
+    "keras": "3.11.3",
+    "numpy": "2.2.6",
+    "protobuf": "5.29.5",
+    "setuptools": "80.9.0",
+    "h5py": "3.14.0",
+    "ml-dtypes": "0.5.3"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "efficientnet_b0_mel": {
+    "source": "https://download.pytorch.org/models/efficientnet_b0_rwightman-7f5810bc.pth",
+    "weights_enum": "torchvision.models.EfficientNet_B0_Weights.IMAGENET1K_V1",
+    "backbone_checkpoint": "models/accuracy_v2/efficientnet_backbone.pt",
+    "backbone_sha256": "51ebc58f8c40455d87b4433b68af635024787ba39cc3eff03e767c314c85a064",
+    "license_files": [
+      "models/accuracy_v2/TORCHVISION_LICENSE",
+      "models/accuracy_v2/EFFICIENTNET_LICENSE"
+    ]
+  },
+  "yamnet_transfer": {
+    "source": "https://tfhub.dev/google/yamnet/1",
+    "version": 1,
+    "sample_rate": 16000,
+    "input": "original mono waveform",
+    "embedding_dimension": 1024,
+    "pooling": "mean over frames",
+    "frozen": true,
+    "extraction_device": "CPU",
+    "cached_files": {
+      "9616fd04ec2360621642ef9455b84f4b668e219e/assets/yamnet_class_map.csv": {
+        "sha256": "cdf24d193e196d9e95912a2667051ae203e92a2ba09449218ccb40ef787c6df2",
+        "bytes": 14096
+      },
+      "9616fd04ec2360621642ef9455b84f4b668e219e/saved_model.pb": {
+        "sha256": "672af6e1e34fe15a42d45d70217fd39f97e10aef9b0effbf9b0bf7826fccd462",
+        "bytes": 3176321
+      },
+      "9616fd04ec2360621642ef9455b84f4b668e219e/variables/variables.data-00000-of-00001": {
+        "sha256": "d6753f22f173b2a8b1ce78918eaae79bf0a41ca61f4cfe9a1b948c97ff094ddc",
+        "bytes": 15077564
+      },
+      "9616fd04ec2360621642ef9455b84f4b668e219e/variables/variables.index": {
+        "sha256": "0bc2ca10e56e8a71b96a2cad26adbbabff927e9344fbd2df8ae7275ddf76ae1e",
+        "bytes": 7400
+      },
+      "9616fd04ec2360621642ef9455b84f4b668e219e.descriptor.txt": {
+        "sha256": "011cf51a64ccb41a2527bce5d1a1a5d8481a358033cd076853ac1dd5f2f6c831",
+        "bytes": 122
+      }
+    },
+    "total_cache_bytes": 18275503
+  },
+  "tensorflow_wheel": {
+    "url": "https://files.pythonhosted.org/packages/e3/f8/9246d3c7e185a29d7359d8b12b3d70bf2c3150ecf1427ec1382290e71a56/tensorflow-2.20.0-cp311-cp311-win_amd64.whl",
+    "sha256": "7551558a48c2e2f6c32a1537f06c654a9df1408a1c18e7b99c3caafbd03edfe3",
+    "size": 331845735
+  },
+  "recovery_runtime": {
+    "source": "https://www.python.org/ftp/python/3.11.9/python-3.11.9-embed-amd64.zip",
+    "sha256": "009d6bf7e3b2ddca3d784fa09f90fe54336d5b60f0e0f305c37f400bf83cfd3b",
+    "baseline_venv_unchanged": true
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "passed": true,
+  "transport": "local HTTP Gradio API",
+  "models": {
+    "CNN v1 (baseline)": {
+      "passed": true,
+      "kazakh_label": "Түшкіру",
+      "output_count": 5
+    },
+    "Best V2": {
+      "passed": true,
+      "kazakh_label": "Иттің үруі",
+      "output_count": 5
+    },
+    "default_selector": {
+      "passed": true,
+      "kazakh_label": "Иттің үруі"
+    }
+  },
+  "server_closed": true,
+  "public_share": false
+}
