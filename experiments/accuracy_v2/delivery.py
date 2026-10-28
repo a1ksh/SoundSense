@@ -7,6 +7,7 @@ import argparse
 import base64
 from datetime import datetime, timezone
 import json
+import hashlib
 import os
 import subprocess
 import urllib.parse
@@ -69,6 +70,20 @@ def main():
     if git('branch', '--show-current') != BRANCH:
         raise ValueError('Unexpected branch')
     commit = git('rev-parse', 'HEAD')
+    # CSV files are checksum-bearing experiment artifacts. Git text conversion
+    # must not change their bytes when publishing or checking out another OS.
+    artifact_checks = 0
+    for directory, digest_key in [('predictions', 'csv_sha256'), ('training_history', 'history_sha256')]:
+        for receipt_path in (REPORT / directory).glob('*.json'):
+            receipt = read_json(receipt_path)
+            if digest_key not in receipt:
+                continue
+            csv_path = receipt_path.with_suffix('.csv')
+            relative = csv_path.relative_to(ROOT).as_posix()
+            content = subprocess.check_output(['git', 'show', f'HEAD:{relative}'], cwd=ROOT)
+            if hashlib.sha256(content).hexdigest() != receipt[digest_key]:
+                raise ValueError(f'Committed artifact checksum differs: {relative}')
+            artifact_checks += 1
     remote_commit = request('/git/ref/heads/' + BRANCH)['object']['sha']
     if remote_commit != commit:
         raise ValueError('Pushed branch does not match local HEAD')
@@ -84,6 +99,7 @@ def main():
         raise ValueError('Local-only environment/data unexpectedly committed')
     receipt = {'repository': REMOTE, 'branch': BRANCH, 'commit': commit, 'push_verified': True,
                'verified_utc': datetime.now(timezone.utc).isoformat(), 'verified_blob_count': len(actual),
+               'committed_csv_checksums_verified': artifact_checks,
                'verification': 'GitHub REST branch SHA and all recursive tree blob SHAs match local HEAD',
                'raw_audio_uploaded': False, 'lfs_used': False}
     if args.create_draft_pr:

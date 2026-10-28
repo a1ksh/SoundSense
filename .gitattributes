@@ -1,0 +1,7 @@
+# Persist checksum-bearing V2 experiment evidence byte-for-byte on every OS.
+reports/accuracy_v2/*.csv -text
+reports/accuracy_v2/**/*.csv -text
+models/accuracy_v2/*.pt -text
+reports/accuracy_v2/**/*.pt -text
+# The source recipe's recorded SHA-256 is based on LF bytes.
+experiments/accuracy_v2/*.json text eol=lf

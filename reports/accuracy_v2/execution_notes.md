@@ -54,6 +54,10 @@ YAMNet training and is superseded by the final complete test run.
 - GitHub connector returned 404 for this repository. Existing Git credentials
   verified the configured remote; curl-based GitHub API access verified push
   permission after a urllib request timed out. Credentials stayed in memory.
+- The final Git packaging check detected `core.autocrlf` converting CSV bytes
+  despite their stored SHA-256 receipts. Scoped `.gitattributes` now preserves
+  V2 CSV/checkpoint bytes exactly. Publication verification checks every
+  committed prediction/history receipt as well as the remote recursive tree.
 
 ## Results and limits
 
