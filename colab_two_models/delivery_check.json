@@ -1,0 +1,38 @@
+{
+  "passed": true,
+  "models": [
+    "yamnet_transfer",
+    "efficientnet_b0_mel"
+  ],
+  "trained_heads": 10,
+  "figures": 58,
+  "executed_code_cells": 17,
+  "all_notebook_preview_sources_verified": true,
+  "bundle_bytes": 204756718,
+  "files": {
+    "SoundSense_2Models_Trained_Colab.zip": {
+      "bytes": 204756718,
+      "sha256": "8b15b04ef86cefa3c922968a8b16d2baf05c9f4458738e8b1c1547bd2ba1238e"
+    },
+    "SoundSense_2Models_Results.zip": {
+      "bytes": 32356617,
+      "sha256": "22c990ba18e8565c81ada968f159f3435579754c866dc42ad2ff36035ed65f5d"
+    },
+    "SoundSense_YAMNet_EfficientNet_Full_Colab.ipynb": {
+      "bytes": 14968368,
+      "sha256": "062848e03f66ff34cc5d23ae1c1fa25ef9c6d0944fd82f92322b88d43b6d36e0"
+    },
+    "SoundSense_test_audio_10.zip": {
+      "bytes": 3462891,
+      "sha256": "83630c13d38b9bf63fff13d32874ab51b97a2f943f2fb128d27930113b3f865d"
+    },
+    "SoundSense_YAMNet_Verification_Cache.zip": {
+      "bytes": 709339,
+      "sha256": "f60e516ffb4d1a9300ad58ea40a6c5cf97fe86ef4ee4ea10779d78d17684aae9"
+    },
+    "SoundSense_Colab_Guide_EN.md": {
+      "bytes": 6372,
+      "sha256": "814df3d2991a16cdfe86e14f4b073d9cae8b8d920109bc3f10f7ffab1417002f"
+    }
+  }
+}

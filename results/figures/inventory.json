@@ -1,202 +1,74 @@
 [
   {
-    "file": "results/figures/audio_waveform_examples.png",
-    "width": 3796,
-    "height": 4096,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
+    "path": "results/figures/audio_waveform_examples.png",
     "sha256": "2eff3b5c930c099a09004d0a970107ecbe6a17a73aa1239eb3bae81c1f3379ea"
   },
   {
-    "file": "results/figures/class_distribution.png",
-    "width": 3196,
-    "height": 1398,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
+    "path": "results/figures/class_distribution.png",
     "sha256": "4be05581e74e7cf264d7ec49bc734efd27b6779bb1e7e1a5025d1b71517e9d81"
   },
   {
-    "file": "results/figures/cnn_accuracy_curve.png",
-    "width": 2296,
-    "height": 1338,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "bd373515cbab1fdafcd1a86ce6ec380ac5322e309b6e426af4884683163b216f"
+    "path": "results/figures/yamnet_transfer_fixed_confusion.png",
+    "sha256": "3a22b96130528194e9ac84b99ac3d53db2eb59867b69b5b8d1545ca24677904f"
   },
   {
-    "file": "results/figures/cnn_confusion_matrix.png",
-    "width": 2742,
-    "height": 2403,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "9a725e2c5847b0a65b035a093269e7c221ad48e1de68680addfc4d3c957d8859"
+    "path": "results/figures/yamnet_transfer_fixed_confusion_normalized.png",
+    "sha256": "037a6217b6772667b4ca0ea8b34d0b1a5927e104f34b0c9f0957d98da48b469d"
   },
   {
-    "file": "results/figures/cnn_confusion_matrix_normalized.png",
-    "width": 2777,
-    "height": 2403,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "8370256e52f5c39b09a7ef08c56a55666926143131e52b4241e9c84a020f8420"
+    "path": "results/figures/yamnet_transfer_fixed_per_class_f1.png",
+    "sha256": "d6441fcf4ed3ae73b734e13df64e3e557fa2cacc5ed2983ce02c5a3e89100fee"
   },
   {
-    "file": "results/figures/cnn_loss_curve.png",
-    "width": 2297,
-    "height": 1337,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "e47f07548212b54a5718a2d6455ccd4c22723a9ee725139be07f519caf9b85b6"
+    "path": "results/figures/yamnet_transfer_fixed_precision_recall.png",
+    "sha256": "912c38bdd567e526fa6dff3cd8909df40755526d72d57d332919a86a156e6827"
   },
   {
-    "file": "results/figures/cnn_prediction_confidence.png",
-    "width": 2597,
-    "height": 1399,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "a26e22ba4cf2c72d78073241924af648ff6f5589b52bfb5c088a3ffcbb69d726"
+    "path": "results/figures/yamnet_transfer_fixed_roc.png",
+    "sha256": "27e55e69a625239538cf8e9e68c5f4fa7a2ea7719db89e0840805fee8a6d23fa"
   },
   {
-    "file": "results/figures/error_analysis_examples.png",
-    "width": 3743,
-    "height": 3214,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "6b5e33b63935e495eaf54163ed30111abc6b786bdc944a4166376369da4443fb"
+    "path": "results/figures/yamnet_transfer_fixed_training.png",
+    "sha256": "1e37e7ed3ff134770035aeebf967ea52544b832288702e72320be6915ab5e6b4"
   },
   {
-    "file": "results/figures/mel_spectrogram_examples.png",
-    "width": 3734,
-    "height": 4096,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "f190748a68c0b8d8da7a668f8bfdba3a641400490f1784dd64405cd267e5f48a"
+    "path": "results/figures/yamnet_transfer_fold1_training.png",
+    "sha256": "bb5d575fc0dde42a1559a00588cd0ebcd4ef46c0085d8b37942a893895e13a91"
   },
   {
-    "file": "results/figures/mlp_accuracy_curve.png",
-    "width": 2296,
-    "height": 1338,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "73f4aba4ebcf404efffd47ebe0fdcc72ed1b3507ab3f621740d554f4aaa83804"
+    "path": "results/figures/yamnet_transfer_fold2_training.png",
+    "sha256": "a0d67eee4528dbef7547e5f7ef1a5d2fbc2c444a46b7e7eb2c1eab2f28c1758c"
   },
   {
-    "file": "results/figures/mlp_confusion_matrix.png",
-    "width": 2742,
-    "height": 2403,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "46db7afa22cb94fe261242778250e36e5aacde6a6a616a448d9754f5f64b41aa"
+    "path": "results/figures/yamnet_transfer_fold3_training.png",
+    "sha256": "3b53ebbe565d0afe441d180679d6d5e458bcff276eb287e988c3ca6de17b4fde"
   },
   {
-    "file": "results/figures/mlp_confusion_matrix_normalized.png",
-    "width": 2777,
-    "height": 2403,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "85bb9cdf63f46288f06a9cb204d6331c55d9de46228af5af5dd5ccb67ed42d15"
+    "path": "results/figures/yamnet_transfer_fold4_training.png",
+    "sha256": "ade1eb9e03a0ec96310cdf693ddf68b43f63fc46255f7e62e252a166c96064ff"
   },
   {
-    "file": "results/figures/mlp_loss_curve.png",
-    "width": 2297,
-    "height": 1337,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "18189f63ec3083e27af293127aab3b335b580bce9a8ce674e8fc7d0e1d19385f"
+    "path": "results/figures/yamnet_transfer_oof_confusion.png",
+    "sha256": "4736a81f19ec30e9195cafb3c11511a8c5c58cf906b7d7ffce2dcfab66de37ac"
   },
   {
-    "file": "results/figures/mlp_precision_recall_per_class.png",
-    "width": 3193,
-    "height": 1997,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "7e7b930ca801cf1f511ce4dfdfd797312b485d3ab0a528b7f0fc548af2f54e29"
+    "path": "results/figures/yamnet_transfer_oof_confusion_normalized.png",
+    "sha256": "a64098249482d2b02c4d7398b9d4a6301afcf48744fd4dcffddc5b60944abb39"
   },
   {
-    "file": "results/figures/mlp_roc_curves_per_class.png",
-    "width": 3193,
-    "height": 1997,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "1cf3c60cdfc33cdb535e7aef92a365be22e2cb44d8fd03c42606461c3a9cf57e"
+    "path": "results/figures/yamnet_transfer_oof_fold_metrics.png",
+    "sha256": "8e085a79521eafe03e43dab9b7acfcd6221d48584b40451ed0c2520d133021bf"
   },
   {
-    "file": "results/figures/model_metrics_comparison.png",
-    "width": 3496,
-    "height": 1395,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "30bfd7cb3e101da720145838e76337a082c437369347bb42b2dc65a0a3acbff0"
+    "path": "results/figures/yamnet_transfer_oof_per_class_f1.png",
+    "sha256": "f2111ddb0626e4ef85a34c07c68d48041762292424483430f8f153cb90b4e840"
   },
   {
-    "file": "results/figures/models_training_comparison.png",
-    "width": 3797,
-    "height": 1390,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "6f7609dd33cddad1967b7596d4c9d1abcaf205a0de061ce3790916688d32161b"
+    "path": "results/figures/yamnet_transfer_oof_precision_recall.png",
+    "sha256": "5b780d0edbd0bae90055e6f71363ed1013b18daa25a4e975fd8adfeb2f6b54ae"
   },
   {
-    "file": "results/figures/per_class_f1_comparison.png",
-    "width": 3196,
-    "height": 1398,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "e04812206034e69f56d140f074c04c10c7abae4517402e7b6aba5338e8d1b5b1"
-  },
-  {
-    "file": "results/figures/precision_recall_per_class.png",
-    "width": 3193,
-    "height": 1997,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "defb5066a2ab888cfc1a91a23aba7b6b1aeb83900bc677494d321295e35f7a03"
-  },
-  {
-    "file": "results/figures/roc_curves_per_class.png",
-    "width": 3193,
-    "height": 1997,
-    "dpi": [
-      299.9994,
-      299.9994
-    ],
-    "sha256": "0df8130c2373059e95ce685782b6fbfc4889de48c50c007261b5ff8138cb7dad"
+    "path": "results/figures/yamnet_transfer_oof_roc.png",
+    "sha256": "fccdf9489932862fba1641a52c89e3a637603cbbd5a624d303a559f8ec3d8a59"
   }
 ]

@@ -1,0 +1,94 @@
+{
+  "passed": true,
+  "checked_utc": "2026-11-22T13:21:12.894824+00:00",
+  "retrained": false,
+  "original_clips": 400,
+  "immutable_asset_checksums": 416,
+  "feature_asset_checksums": 5,
+  "bundle_contents_match_original_assets": true,
+  "trained_heads_verified": 10,
+  "oof_predictions_recomputed": 800,
+  "comparison_metrics_recomputed": true,
+  "head_checks": [
+    {
+      "model": "yamnet_transfer",
+      "fold": 1,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 2,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 3,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 4,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 5,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 1,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 2,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 3,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 4,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 5,
+      "checkpoint_hash": true,
+      "history_hash": true,
+      "train_only_scaler": true,
+      "saved_scores_reproduced": true
+    }
+  ]
+}

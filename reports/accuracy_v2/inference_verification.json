@@ -1,36 +1,19 @@
 {
-  "cnn_v1": {
-    "passed": true,
-    "end_to_end_seconds_one_clip": 5.877147699939087,
-    "input": "1-100032-A-0.wav",
-    "split": "training fold 1",
-    "latency_note": "one clip, model initialization excluded"
-  },
-  "cnn_v2": {
-    "passed": true,
-    "input": "1-100032-A-0.wav",
-    "split": "training fold 1",
-    "repeat_deterministic": true,
-    "training_app_probability_equivalence": true,
-    "end_to_end_seconds_one_clip": 0.023379000020213425,
-    "latency_note": "one clip, model initialization excluded; YAMNet subprocess startup included"
-  },
-  "efficientnet_b0_mel": {
-    "passed": true,
-    "input": "1-100032-A-0.wav",
-    "split": "training fold 1",
-    "repeat_deterministic": true,
-    "training_app_probability_equivalence": true,
-    "end_to_end_seconds_one_clip": 0.13883910002186894,
-    "latency_note": "one clip, model initialization excluded; YAMNet subprocess startup included"
-  },
   "yamnet_transfer": {
     "passed": true,
     "input": "1-100032-A-0.wav",
     "split": "training fold 1",
     "repeat_deterministic": true,
     "training_app_probability_equivalence": true,
-    "end_to_end_seconds_one_clip": 41.88519760000054,
-    "latency_note": "one clip, model initialization excluded; YAMNet subprocess startup included"
+    "worker_reused": true,
+    "worker_closed": true,
+    "startup_seconds": 31.24207259999821,
+    "warm_prediction_seconds": 5.223193999991054,
+    "mel_shape": [
+      64,
+      528
+    ],
+    "mel_source": "official YAMNet log-Mel output; natural logarithm",
+    "latency_note": "one training clip on this computer; not a benchmark"
   }
 }

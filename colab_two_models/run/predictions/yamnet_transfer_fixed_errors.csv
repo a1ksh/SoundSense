@@ -1,0 +1,3 @@
+filename,fold,src_file,true_label,true_index,predicted_index,predicted_label,confidence,prob_dog,prob_rooster,prob_rain,prob_sea_waves,prob_crackling_fire,prob_crying_baby,prob_sneezing,prob_clock_tick,prob_helicopter,prob_chainsaw
+5-213802-A-12.wav,5,213802,crackling_fire,4,8,helicopter,0.92592484,3.5962945e-05,0.00057347765,0.01552561,0.0059416783,0.017521985,0.00020668244,0.0008230356,0.0026474632,0.92592484,0.030799435
+5-215658-B-12.wav,5,215658,crackling_fire,4,2,rain,0.87026066,0.00067132065,0.00012396541,0.87026066,0.0030716166,0.12481653,6.501344e-05,0.00012920013,8.999893e-05,0.0004859653,0.00028570578

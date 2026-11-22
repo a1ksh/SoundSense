@@ -1,0 +1,6 @@
+{
+  "accuracy_mean": 0.885,
+  "accuracy_sd_sample": 0.024044230077089185,
+  "macro_f1_mean": 0.8837177521480928,
+  "macro_f1_sd_sample": 0.025314572478855057
+}

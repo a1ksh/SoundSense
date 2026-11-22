@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "url": "http://127.0.0.1:7860/",
+  "models": {
+    "YAMNet": {
+      "passed": true,
+      "label": "Сәбидің жылауы",
+      "top3_matches_saved_predictions": true,
+      "waveform_and_mel_returned": true,
+      "preview_16k_five_seconds": true,
+      "output_count": 5,
+      "seconds": 7.559849500015844
+    },
+    "EfficientNet-B0": {
+      "passed": true,
+      "label": "Сәбидің жылауы",
+      "top3_matches_saved_predictions": true,
+      "waveform_and_mel_returned": true,
+      "preview_16k_five_seconds": true,
+      "output_count": 5,
+      "seconds": 2.510777899995446
+    }
+  },
+  "model_selector_enabled": true,
+  "model_selector_removed": false,
+  "input_count": 2,
+  "output_count": 5,
+  "default_model": "YAMNet",
+  "single_audio_default_api_compatible": true,
+  "all_three_routes_ok": true,
+  "input_audio": "5-151085-A-20.wav",
+  "public_share": false,
+  "pytest_passed": 69
+}

@@ -10,6 +10,7 @@ data/cache/
 data/raw/
 *.part
 *.tmp
+*.log
 .env
 .env.*
 Thumbs.db
@@ -17,3 +18,21 @@ Thumbs.db
 results/logs/
 results/delivery_receipt.local.json
 reports/accuracy_v2/delivery.local.json
+
+# Local tooling and generated coursework/download packages.
+.ruff_cache/
+deliverables/
+*.docx
+
+# Large reproducibility assets are published in the full GitHub release bundle.
+colab_two_models/assets/audio/
+colab_two_models/assets/backbones/
+colab_two_models/assets/features/
+colab_two_models/*.zip
+colab_two_models/*_request.json
+colab_two_models/*.npz
+colab_two_models/*.npy
+colab_two_models/yamnet_extract_worker.py
+colab_two_models/run/*_request.json
+colab_two_models/.tf_env/
+colab_two_models/run/*.log

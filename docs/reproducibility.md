@@ -1,61 +1,82 @@
-# Қайта өндіру / Reproducibility
+# Installation and reproducibility
 
-## Нақты орындалған тәжірибе
+The [main README](../README.md) provides installation commands for the two-model application. Use Python 3.11 with PyTorch 2.10.0 / Torchvision 0.25.0 in the main environment, and TensorFlow 2.20.0 in a separate YAMNet environment. Set `SOUNDSENSE_YAMNET_PYTHON` to that environment's Python executable before running the application or live inference tests.
 
-- UTC басталу уақыты: `2026-10-27T15:12:33.020356+00:00`.
-- Құрылғы: `NVIDIA GeForce RTX 3050 Laptop GPU` / `cuda`; CUDA runtime: `12.6`.
-- Python: `3.11.9`; платформа: `Windows-10-10.0.26300-SP0`.
-- Seed: 42; детерминдік алгоритмдер қосылған; Windows num_workers=0.
-- Жұмыс басталған Git SHA: `091105bbdd577d23a3d1e7f7f255b4bdbab21d76` (implementation жұмыс ағашында болды; final commit үшін `git log -1`).
-- Нақты бастапқы конфигурация: [run metadata](../results/run_metadata.json); файл/код қолтаңбалары checkpoint пен training JSON ішінде.
-- ESC-10 upstream SHA: `33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6`; 400 SHA-256: [manifest](../data/metadata/manifest.csv).
+The recorded experiment ran locally on Windows with CUDA. The notebook outputs are real saved outputs from that environment, not verified Google-hosted Colab execution. The exact recorded versions are in [colab_two_models/run/environment.json](../colab_two_models/run/environment.json); training metadata remains with each checkpoint.
 
-- torch: `2.7.1+cu126`
-- numpy: `2.2.6`
-- pandas: `2.3.3`
-- librosa: `0.11.0`
-- soundfile: `0.13.1`
-- scikit-learn: `1.7.2`
-- matplotlib: `3.10.7`
-- seaborn: `0.13.2`
-- scipy: `1.16.3`
-- gradio: `5.49.1`
-- tqdm: `4.67.1`
-- pyyaml: `6.0.3`
-- pytest: `8.4.2`
+## Required files
 
-## Windows PowerShell
+| Task | Required assets |
+| --- | --- |
+| Run the application | Repository model files; separate TensorFlow environment; official YAMNet weights downloaded on first use |
+| Run the complete test suite | Application assets, the 400 WAVs in `data/raw/`, and the original YAMNet verification feature cache |
+| Reproduce the two-model notebook | Full trained Colab bundle, or internet access to download data and pretrained backbones |
+| Inspect results | Committed CSV/JSON tables, histories, predictions, and PNG/SVG/PDF figures |
 
-```powershell
-& "$env:LOCALAPPDATA\Programs\Python\Python311\python.exe" -m venv .venv
-.\.venv\Scripts\python.exe -m pip install torch==2.7.1 --index-url https://download.pytorch.org/whl/cu126
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m soundsense.run_all
+## Verify the local source and application
+
+1. Install both environments following the [README](../README.md).
+2. Download the pinned audio using `python -m soundsense.download_data`, or copy `assets/audio/*.wav` from the full release bundle into `data/raw/`.
+3. Download `SoundSense_YAMNet_Verification_Cache.zip` from the [latest release](https://github.com/a1ksh/SoundSense/releases/latest) and extract it **into the repository root**. It supplies `data/accuracy_v2_cache/yamnet_transfer_embeddings.npz` and its checksum metadata. This small cache reproduces the original YAMNet experiment and is separate from the two-model notebook's feature-cache format.
+4. Run:
+
+```bash
+python -m soundsense.download_data --skip-download
+python -m experiments.accuracy_v2.check
 ```
 
-CPU баламасы: алғашқы pip жолында `https://download.pytorch.org/whl/cpu` қолданыңыз. CUDA Toolkit бөлек орнату қажет емес. Нақты орындалған орта [requirements-lock.txt](../requirements-lock.txt) ішінде; сол нұсқаларды қалпына келтіру үшін CUDA wheel орнатқан соң `pip install -r requirements-lock.txt` қолданыңыз. Басқа платформада `+cu126` wheel сәйкес келмеуі мүмкін, сондықтан `requirements.txt` пен құрылғыға сәйкес ресми wheel пайдаланылады.
+The comprehensive check verifies five saved YAMNet heads and their history hashes, regenerates the YAMNet report, runs pytest, reconstructs all 400 saved OOF predictions and train-only scalers, exercises a persistent YAMNet worker, and tests both deployed models through the actual local Gradio HTTP API. It writes [reports/accuracy_v2/quality_checks.json](../reports/accuracy_v2/quality_checks.json). It does not retrain models.
 
-```powershell
-.\.venv\Scripts\python.exe -m soundsense.run_all --skip-download
-.\.venv\Scripts\python.exe -m soundsense.visualize
-.\.venv\Scripts\python.exe -m pytest -q
-.\.venv\Scripts\python.exe -m soundsense.smoke
-.\.venv\Scripts\python.exe app.py
+Run only tests with `python -m pytest -q`. To verify a separately running app:
+
+```bash
+python app.py --port 7869
+# In a second terminal with the same environment:
+python -m tools.check_website_models --url http://127.0.0.1:7869
 ```
 
-Қалыпты қайта іске қосу дайын download, feature cache, аяқталған training және test predictions қайта қолданады. Код/баптау/дерек өзгерсе checkpoint автоматты үнсіз қайта оқытылмайды; `--force-train` керек. Жаңа тәжірибе үшін `python -m soundsense.run_all --force-train` барлық модельді seed-тен бастайды. Осыдан кейін fold-5 қайта қаралатыны audit файлында жазылады; бұл тәуелсіз жаңа тест болмайды. Үзілген training аяқталған деп саналмайды, сол модель seed-тен қайта басталады; epoch деңгейіндегі optimizer resume қолданылмайды. Жүктеу жеке файл бойынша қалпына келеді: жарамды файл сақталады, толық түспегені `.part` арқылы қайта жүктеледі.
+The HTTP check compares each model's top-three predictions with its saved test scores and checks all three page routes, five API outputs, and the 16 kHz five-second audio preview.
 
-Windows-та Git жол соңын LF/CRLF түріне ауыстыруы мүмкін. Код fingerprint-тері LF түріне келтіріліп есептеледі; сақталған history/prediction CSV және checkpoint файлдары Git-ке байттары өзгермей енгізілген. `python tools/check_git_artifacts.py` Git индексіндегі файлдарды Windows checkout сүзгісі арқылы тексеріп, екі training resume қолтаңбасын салыстырады. Нақты тексеру: `results/git_checkout_verification.json`.
+## Recreate reports without retraining
 
-## Артефактілер
+```bash
+python -m experiments.accuracy_v2.report
+```
 
-- `models/mlp_best.pt`, `models/cnn_best.pt`: ең төмен validation loss салмақтары, preprocessing, mapping, статистика.
-- `artifacts/preprocessing_stats.json`: тек train статистикасы.
-- `results/history/*.csv`: нақты эпохалар; `*_training.json`: duration, batch, параметр саны, checksum.
-- `results/predictions/*_test.csv`: 80 fold-5 жазбасы, 10 ықтималдық; `test_access_audit.json`: тест inference журналы.
-- `results/metrics/`: per-class, macro/weighted, ROC/PR нүктелері, confusion matrix.
-- `results/summary.json`, `results/model_comparison.csv`: модельдерді салыстыру.
-- `results/figures/inventory.json`: әр PNG өлшемі, 300 dpi және SHA-256.
-- `results/pipeline_status.json`: кезеңдер, exit нәтижесі; `results/pytest.txt`, `results/gradio_smoke.json`: нақты тексерулер.
+This reads the preserved YAMNet predictions and epoch histories and produces 16 YAMNet plots in `reports/accuracy_v2/plots/` and `results/figures/`. The latter also contains two dataset plots. It does not recreate the two-model comparison figures or change the README.
 
-Raw WAV Git LFS-пен тек квота/рұқсат расталса жіберіледі. Әйтпесе local қалады; downloader, manifest және атрибуция репозиторийге кіреді. Нақты push күйі [delivery.json](../results/delivery.json) файлында көрсетіледі.
+For both models and all 58 figures, run the [Colab notebook](../colab_two_models/SoundSense_YAMNet_EfficientNet_Full_Colab.ipynb) with `RUN_MODE = 'use_trained'` and the full bundle. Its checks cover all ten heads, train-only scalers, dataset/backbone/frontend feature contracts, fold coverage, real audio inference, and exports in PNG/SVG/PDF. See the [Colab guide](../colab_two_models/README.md).
+
+## Train a new experiment
+
+Use the notebook with `RUN_MODE = 'retrain'` to train both models. It uses frozen backbone features; it does not fine-tune either backbone.
+
+For a separate YAMNet-only experiment, point the command at a new empty output directory:
+
+```powershell
+python -m experiments.accuracy_v2.run --retrain --output-dir .runtime/new_yamnet_run --yamnet-python $env:SOUNDSENSE_YAMNET_PYTHON
+```
+
+Saved deployment checkpoints are not overwritten. The default `python -m experiments.accuracy_v2.run` validates existing YAMNet artifacts and recreates their report.
+
+| Head training setting | YAMNet | EfficientNet-B0 |
+| --- | ---: | ---: |
+| Seed | 42 | 42 |
+| Optimizer | AdamW | AdamW |
+| Learning rate | 0.001 | 0.002 |
+| Weight decay | 0.001 | 0.001 |
+| Batch size | 16 | 16 |
+| Maximum epochs | 160 | 120 |
+| Early stopping patience | 25 | 20 |
+| Dropout | 0.2 | 0.2 |
+| Checkpoint selection | Minimum validation cross-entropy | Minimum validation cross-entropy |
+
+The scheduler reduces learning rate on a validation plateau. Feature means and standard deviations are fitted on the training partition only. The fixed split is train folds 1–3, validation fold 4, test fold 5. Each of five evaluation folds uses three training folds, the preceding fold for validation, and one test fold.
+
+## Artifact integrity and interpretation
+
+Release downloads include `SHA256SUMS.txt`. The full Colab bundle contains `package_manifest.json`, which records original immutable asset and feature-cache hashes. The notebook checks immutable assets before use and checks feature contracts against data, backbone, and frontend details. Git attributes preserve checksum-bearing dataset metadata, checkpoints, and result files byte for byte across platforms.
+
+The application verifies deployed checkpoint hashes using [models/accuracy_v2/yamnet.json](../models/accuracy_v2/yamnet.json) and [models/transfer/efficientnet_b0.json](../models/transfer/efficientnet_b0.json). The two-model research heads use a separate checkpoint schema from the original YAMNet-only experiment; the EfficientNet deployment metadata records its source checkpoint.
+
+The historical source signatures belong to the original training run and are preserved. Documentation updates and code cleanup are not presented as new training. Existing saved results have one seed, a previously observed fixed test, and historical fixed-validation model selection; they are not a fully nested or externally validated estimate. See the [README evaluation limits](../README.md#evaluation-limits).

@@ -1,96 +1,48 @@
-# Конволюциялық нейрондық желілер негізінде қоршаған орта дыбыстарын автоматты жіктеу жүйесін әзірлеу
+# SoundSense YAMNet нәтижелері
 
-## Кіріспе және өзектілік
+Бұл есеп AudioSet-те алдын ала оқытылған frozen YAMNet және ESC-10 үшін жаңа head нәтижелерін сипаттайды. Қолданба YAMNet пен EfficientNet-B0 модельдерін қолдайды.
+MobileNetV1 терең CNN backbone 1024 embedding береді. Train-only mean/std → Dropout 0.2 → Linear 1024→10.
+Оқытылатын head параметрлері 10 250. Backbone қайта оқытылмаған.
 
-Қоршаған орта дыбыстары оқиға туралы көрініссіз ақпарат береді. Иттің үруі, жаңбыр немесе тікұшақ дыбысын ажырату акустикалық бақылау мен қолжетімді интерфейстерге негіз бола алады. Алайда шағын оқу жиынындағы нәтиже өндірістік сенімділікті дәлелдемейді. Осы жұмыстың мақсаты — ашық дереккөзге сүйеніп, дыбыс жіктеудің тексерілетін оқу тәжірибесін және шағын демонстрациялық қолданбасын әзірлеу.
+| Бағалау | Дұрыс / барлығы | Accuracy | Macro F1 | ROC AUC | Macro AP |
+|---|---:|---:|---:|---:|---:|
+| fixed test | 78/80 | 97.50% | 0.9739 | 0.9988 | 0.9924 |
+| OOF | 391/400 | 97.75% | 0.9775 | 0.9984 | 0.9921 |
 
-Міндеттер: ESC-10 деректерін лицензиясымен алу; дыбысты бірдей log-Mel кескініне түрлендіру; MLP және CNN модельдерін оқыту; бөлек бақылау жиынында салыстыру; нақты нәтижелерден графиктер мен есеп құру. Бұл жұмыс жаңа архитектура немесе бұрын жарияланған көрсеткішті қайталау туралы мәлімдеме жасамайды.
+## Әдіснама
 
-## Теориялық негіз
+ESC-10: 400 бастапқы клип, он санат, ресми бес fold. Fixed train 1–3 (240), validation 4 (80), test 5 (80).
+Seed 42. AdamW lr=0.001 weight_decay=0.001 batch=16; max 160 epoch patience=25. Checkpoint ең төмен validation cross-entropy арқылы таңдалады.
+YAMNet frontend: 16 кГц mono; STFT 25 мс және 10 мс; 64 Mel жолағы 125–7500 Гц; log offset 0.001; патч 96×64.
+Бес секунд қысқа болса нөлмен толықтырылады, ұзын болса алғашқы бөлігі алынады. Frame embedding уақыт бойынша орташаланады.
+CV: test K, validation K−1 (1 үшін 5), қалған үш fold train. Әр клип бір OOF болжам алады. Fold 5 fixed checkpoint-ін қолданады.
+Scaler тек train арқылы fit жасалады. Backbone frozen, waveform augmentation және SpecAugment қолданылмаған.
 
-Дыбыс уақыт бойынша амплитудамен беріледі. Қысқа уақыттық Фурье түрлендіруі оның жергілікті жиілік құрамын ашады. Mel сүзгілері спектрді есту сезімталдығына жақын жолақтарға біріктіреді, ал логарифмдік шкала қуат ауқымын ықшамдайды. MLP барлық ұяшықты жалпақ вектор ретінде қабылдайды. CNN жергілікті уақыт-жиілік өрнектерін ортақ сүзгілермен іздейді. Негізгі ұғымдар [әдіснамада](methodology_kk.md) толық түсіндірілген.
+## Графиктер
 
-## Деректер және адал бөлу
-
-Ресми ESC-50 метадеректеріндегі `esc10=True` жолдары ғана таңдалды: 400 бірегей, бес секундтық, 44.1 кГц моно WAV; он санат, әр санатта 40 жазба. Бүкіл ESC-50 аудиосы жүктелмейді. Бекітілген upstream commit: `33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6`. ESC-10 үшін CC BY 3.0 қолданылады; ESC-50 толық жиынының лицензиясы бөлек, CC BY-NC. Түпнұсқа LICENSE пен жеке авторлар сақталды.
-
-Оқыту — бастапқы 1, 2, 3 fold (240); валидация — 4-fold (80); қорытынды тест — 5-fold (80). Әр тест санатында сегіз мысал бар. Файл атаулары да, `src_file` бастапқы жазба идентификаторлары да бөліктер арасында қиылыспайды. Кездейсоқ аудиофайл бөлу қолданылған жоқ. Модель нұсқасы тек валидация шығыны бойынша таңдалды. Тест болжамдары таңдау аяқталғаннан кейін сақталады; есепті қайта құру осы болжамдарды пайдаланады.
-
-## Алдын ала өңдеу
-
-Моноға келтіру → `soxr_hq` арқылы 16 кГц-ке қайта дискреттеу → алғашқы 5 секундты алу немесе оң жақтан нөлмен толықтыру (80 000 үлгі) → Hann терезесі, FFT=1024, қадам=512, `center=True`, қуат дәрежесі 2 → 0–8000 Гц, 64 Slaney Mel жолағы → `power_to_db(ref=1.0, top_db=80)` → бүкіл уақыт осін сызықтық интерполяциямен 128 кадрға келтіру. Нәтиже 64×128. Жиілік осі қайта өлшемделмейді. Жеке файлға максимум бойынша амплитуда қалыптау жүргізілмейді.
-
-Стандарттау үшін тек 240 оқу мысалының барлық ұяшықтары бойынша бір орташа және стандарттық ауытқу есептелді: mean=-28.97768679, std=22.01148172. Валидация мен тест бұл статистикаға кірмейді. Қолданба checkpoint ішіндегі осы параметрлерді және дәл осы функцияларды қолданады. Аугментация және алдын ала оқытылған салмақтар қолданылмады.
-
-## Архитектура және тәжірибе
-
-MLP: Flatten(8192) → Linear(128) → ReLU → Dropout(0.4) → Linear(64) → ReLU → Dropout(0.4) → Linear(10).
-
-CNN: үш Conv2D(3×3, padding=1, bias=False) → BatchNorm → ReLU → MaxPool(2) блогы; арналар 16, 32, 64; соңында global average pooling → Dropout(0.3) → Linear(10). CrossEntropyLoss кірісіне softmax емес, logits беріледі; softmax тек болжам ықтималдығын шығару үшін қолданылады.
-
-Нақты құрылғы: **NVIDIA GeForce RTX 3050 Laptop GPU** (`cuda`). Python 3.11.9, PyTorch 2.7.1+cu126. Seed=42, AdamW, learning rate=0.001, weight decay=0.0001, бастапқы batch=16, ең көбі 35 эпоха, validation loss жақсармайтын 7 эпохадан кейін тоқтау. Детерминдік алгоритмдер қосылған. Нақты batch пен әр эпоханың өлшемдері `results/history/` ішінде. Екі модель де кездейсоқ бастапқы салмақтан жеке seed=42 арқылы оқытылды.
-
-## Нақты қорытынды нәтижелер
-
-| Модель | Параметр | Эпоха / үздік | Уақыт, с | Accuracy | Balanced acc. | Macro P | Macro R | Macro F1 | Macro ROC-AUC | Macro AP |
-|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| MLP | 1,057,610 | 19 / 12 | 6.55 | 0.6000 | 0.6000 | 0.6342 | 0.6000 | 0.5776 | 0.9351 | 0.6942 |
-| CNN | 24,058 | 35 / 34 | 13.03 | 0.8375 | 0.8375 | 0.8494 | 0.8375 | 0.8350 | 0.9845 | 0.9296 |
-
-CNN тестте 67/80 жазбаны дұрыс жіктеді, 13 қате жіберді. CNN мен MLP accuracy айырмасы +23.75 пайыздық тармақ. Бұл бір seed пен бір бақылау fold бойынша сипаттамалық салыстыру; статистикалық басымдықтың дәлелі емес. Balanced accuracy — санаттар бойынша recall орташа мәні; тең санды сыныптарда оның accuracy-мен сәйкес болуы күтіледі. Толық macro/weighted precision, recall, F1 және әр санаттың support мәні [сандық метрикаларда](../results/metrics/) сақталған.
-
-CNN үшін F1 ең төмен үш санат: **dog: 0.588, sneezing: 0.714, crackling_fire: 0.769**. F1 ең жоғары үш санат: **rooster: 0.941, crying_baby: 0.941, rain: 0.933**. Бұл сегіз мысалдан алынған санаттық бағалар, сондықтан бір қосымша қате олардың ретін өзгерте алады.
-
-ROC әр санатты қалған тоғызына қарсы бағалайды. Әр санатта 8 оң, 72 теріс мысал болғандықтан осы тәжірибедегі ROC-AUC/AP анықталған. Macro ROC-AUC — он жеке AUC орташа мәні. AP — non-interpolated average precision; оны трапециялық PR-AUC деп атауға болмайды. Precision бөлімінде нөлдік бөлгіш болса, 0 мәні және тиісті саясат метадеректе жазылады.
-
-## Суреттерді талдау
-
-Санаттар диаграммасы әр санатқа train/validation/test=24/8/8 бөлінгенін көрсетеді. Толқын және Mel мысалдары тек оқу бөлігінен алынған, спектрограмманы суреттеу жіктеу дәлдігін өздігінен дәлелдемейді. Оқыту қисықтарындағы тік сызық ең төмен валидация шығыны бар эпоханы белгілейді; соңғы эпоха міндетті түрде ең үздік емес.
-
-Training метрикалары салмақ жаңару барысында, Dropout белсенді `train()` режимінде есептеледі. Validation бір эпохадан кейін тұрақты салмақпен `eval()` режимінде есептеледі; кей эпохада validation accuracy training accuracy-ден жоғары болуы осы режим айырмасымен үйлеседі және өздігінен leakage дәлелі емес. MLP-де үздік эпохадан кейін validation loss төмендемей, patience бойынша тоқтады; CNN-де ең жақсы validation loss 34-эпохада болды. Жақсы AUC пен төменірек argmax accuracy қатар кездесуі рейтингтің сапасы мен соңғы санат шешімінің бөлек өлшем екенін көрсетеді.
-
-Confusion matrix ұяшықтары — нақты fold-5 болжамдарының саны. Жол бойынша қалыпталған нұсқада диагональ әр санаттың recall мәніне тең. Per-class F1 диаграммасы екі модельдің санатқа тәуелді айырмасын көрсетеді. ROC және PR графиктері ықтималдықтардың рейтингін бағалайды; accuracy мен F1 argmax шешімін бағалайды. Қате талдауы manifest ретіндегі алғашқы алты CNN қатесін көрсетеді; олар қолмен ойдан таңдалған мысалдар емес. Confidence гистограммасы — ең үлкен softmax мәндерінің таралуы, калибрленген сенім емес.
-
-Барлық сурет 300 dpi PNG түрінде жасалды. Олардың сандық көздері — `results/history/`, `results/metrics/`, `results/predictions/`, `results/figure_data/`. Әр санаттың нақты жазбасы мен есептелген Mel ұяшықтары да CSV түрінде берілген.
-
-- [audio_waveform_examples.png](../results/figures/audio_waveform_examples.png)
-- [class_distribution.png](../results/figures/class_distribution.png)
-- [cnn_accuracy_curve.png](../results/figures/cnn_accuracy_curve.png)
-- [cnn_confusion_matrix.png](../results/figures/cnn_confusion_matrix.png)
-- [cnn_confusion_matrix_normalized.png](../results/figures/cnn_confusion_matrix_normalized.png)
-- [cnn_loss_curve.png](../results/figures/cnn_loss_curve.png)
-- [cnn_prediction_confidence.png](../results/figures/cnn_prediction_confidence.png)
-- [error_analysis_examples.png](../results/figures/error_analysis_examples.png)
-- [mel_spectrogram_examples.png](../results/figures/mel_spectrogram_examples.png)
-- [mlp_accuracy_curve.png](../results/figures/mlp_accuracy_curve.png)
-- [mlp_confusion_matrix.png](../results/figures/mlp_confusion_matrix.png)
-- [mlp_confusion_matrix_normalized.png](../results/figures/mlp_confusion_matrix_normalized.png)
-- [mlp_loss_curve.png](../results/figures/mlp_loss_curve.png)
-- [mlp_precision_recall_per_class.png](../results/figures/mlp_precision_recall_per_class.png)
-- [mlp_roc_curves_per_class.png](../results/figures/mlp_roc_curves_per_class.png)
-- [model_metrics_comparison.png](../results/figures/model_metrics_comparison.png)
-- [models_training_comparison.png](../results/figures/models_training_comparison.png)
-- [per_class_f1_comparison.png](../results/figures/per_class_f1_comparison.png)
-- [precision_recall_per_class.png](../results/figures/precision_recall_per_class.png)
-- [roc_curves_per_class.png](../results/figures/roc_curves_per_class.png)
-
-## Қолданба
-
-`python app.py` тек сақталған CNN checkpoint жүктейді. WAV/WAVE, MP3, M4A/AAC, FLAC, OGG/OGA, OPUS, AIFF/AIF, WMA, WEBM, MP4, CAF және AU форматтарын қабылдайды. Пайдаланушы қазақша санатты, үздік үш санат ықтималдығын, толқын пішінін және Мел-спектрограмманы көреді, өңделген бес секундты тыңдай алады. MP4/WEBM ішінен алғашқы аудиожол алынады. FFmpeg декодтаған дыбыс та ортақ mono/resampling/Mel өңдеуінен өтеді. Бұл кеңейту модельдерді қайта оқытуды қажет етпейді. Ұзақ файлдың алғашқы бес секунды ғана өңделеді. «Unknown» деген оқытылмаған он бірінші санат енгізілмеді. Интерфейс 10 санат шегін және softmax калибрленбегенін көрсетеді.
+- [yamnet_transfer_fixed_confusion](../reports/accuracy_v2/plots/yamnet_transfer_fixed_confusion.png)
+- [yamnet_transfer_fixed_confusion_normalized](../reports/accuracy_v2/plots/yamnet_transfer_fixed_confusion_normalized.png)
+- [yamnet_transfer_fixed_per_class_f1](../reports/accuracy_v2/plots/yamnet_transfer_fixed_per_class_f1.png)
+- [yamnet_transfer_fixed_precision_recall](../reports/accuracy_v2/plots/yamnet_transfer_fixed_precision_recall.png)
+- [yamnet_transfer_fixed_roc](../reports/accuracy_v2/plots/yamnet_transfer_fixed_roc.png)
+- [yamnet_transfer_fixed_training](../reports/accuracy_v2/plots/yamnet_transfer_fixed_training.png)
+- [yamnet_transfer_fold1_training](../reports/accuracy_v2/plots/yamnet_transfer_fold1_training.png)
+- [yamnet_transfer_fold2_training](../reports/accuracy_v2/plots/yamnet_transfer_fold2_training.png)
+- [yamnet_transfer_fold3_training](../reports/accuracy_v2/plots/yamnet_transfer_fold3_training.png)
+- [yamnet_transfer_fold4_training](../reports/accuracy_v2/plots/yamnet_transfer_fold4_training.png)
+- [yamnet_transfer_oof_confusion](../reports/accuracy_v2/plots/yamnet_transfer_oof_confusion.png)
+- [yamnet_transfer_oof_confusion_normalized](../reports/accuracy_v2/plots/yamnet_transfer_oof_confusion_normalized.png)
+- [yamnet_transfer_oof_fold_metrics](../reports/accuracy_v2/plots/yamnet_transfer_oof_fold_metrics.png)
+- [yamnet_transfer_oof_per_class_f1](../reports/accuracy_v2/plots/yamnet_transfer_oof_per_class_f1.png)
+- [yamnet_transfer_oof_precision_recall](../reports/accuracy_v2/plots/yamnet_transfer_oof_precision_recall.png)
+- [yamnet_transfer_oof_roc](../reports/accuracy_v2/plots/yamnet_transfer_oof_roc.png)
 
 ## Шектеулер
 
-Бұл **single-seed, one held-out fold** зерттеуі; 5-fold қайталанған бағалау емес. 80 тест мысалы ғана бар: бір қате жалпы accuracy-ді 1.25 пайыздық тармаққа, бір санат recall-ын 12.5 тармаққа өзгертеді. Тест үлгілері шағын және бір бастапқы жазбадан бірнеше үзінді болуы мүмкін, сондықтан оларды тәуелсіз бақылау деп алып тар сенім аралығын есептеу дұрыс емес. Басқа құрылғы, бөлме, шу деңгейі және белгісіз санаттар тексерілген жоқ. ESC-50 авторлары бастапқы файлдардың санатқа тәуелді өңделуі (мысалы, жолақ шектеуі) қосымша ақпарат беріп қоюы мүмкін екенін ескертеді. Бір компьютердегі детерминдік баптау өзге кітапхана немесе GPU-де биттік бірдей нәтижені кепілдемейді. Бұл модельді қауіпсіздікке жауапты дыбыстық ескерту жүйесі ретінде қабылдауға болмайды.
+400 клип және бір seed. Fixed test бұрын белгілі болған; бастапқы модель іріктеуі fixed validation арқылы жүргізілген. Бұл толық nested model selection емес.
+AudioSet пен ESC жазбаларының ықтимал қабаттасуы жеке тексерілмеген. Fold SD confidence interval емес.
+Белгісіз дыбыстар да он санаттың біріне жіктеледі. Softmax калибрленбеген. Сыртқы test, multi-label және оқиғаны уақыт бойынша локализациялау бағаланбаған.
+Барлық 400 клиппен соңғы deployment retraining жасалмаған. Бастапқы бес YAMNet checkpoint пен тарих сақталған.
 
-## Қорытынды
-
-Түпнұсқа fold бөлінуі сақталған жергілікті эксперимент орындалды. Екі архитектураның нәтижесі нақты checkpoint болжамдарынан есептелді. Салыстыру, CSV/JSON метрикалар, 300 dpi графиктер және оқытусыз жұмыс істейтін қолданба бір pipeline арқылы қайта құрылады. Жұмыстың нәтижесі — өлшенген оқу тәжірибесі; кең ортаға жалпылау туралы тұжырым үшін қосымша fold, seed және сыртқы дерек қажет.
-
-## Әдебиеттер
-
-1. Piczak, K. J. (2015). *ESC: Dataset for Environmental Sound Classification*. Proceedings of the 23rd ACM International Conference on Multimedia, 1015–1018. https://doi.org/10.1145/2733373.2806390
-2. ESC-50 ресми репозиторийі және ESC-10 ішкі жиыны: https://github.com/karolpiczak/ESC-50 . Бастапқы жазбалардың авторлары, Freesound сілтемелері және лицензиялары: [LICENSE](../data/metadata/LICENSE), [400 файлдың атрибуциясы](../data/metadata/attributions.csv).
-3. PyTorch құжаттамасы, нейрондық желілер мен оңтайландыру: https://docs.pytorch.org/docs/stable/index.html . Ресми CUDA дистрибутивтері: https://pytorch.org/get-started/previous-versions/ .
-4. librosa, Mel-спектрограмма: https://librosa.org/doc/0.11.0/generated/librosa.feature.melspectrogram.html .
-5. scikit-learn, жіктеу метрикалары: https://scikit-learn.org/stable/modules/model_evaluation.html .
-6. Matplotlib құжаттамасы: https://matplotlib.org/stable/ ; Gradio құжаттамасы: https://www.gradio.app/docs .
+Ресми YAMNet: https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
+ESC-50 және ESC-10: https://github.com/karolpiczak/ESC-50

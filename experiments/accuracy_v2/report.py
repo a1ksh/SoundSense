@@ -113,202 +113,109 @@ def plot_predictions(name, frame, labels, metrics):
     errors.to_csv(REPORT / 'predictions' / f'{name}_misclassifications.csv', index=False)
 
 
-def generate():
-    for directory in ['plots', 'metrics', 'predictions', 'training_history']:
-        (REPORT / directory).mkdir(parents=True, exist_ok=True)
+
+def generate(sync_results=True):
+    for directory in ['plots','metrics','predictions','training_history']:
+        (REPORT/directory).mkdir(parents=True,exist_ok=True)
     write_audit_manifests()
-    labels = [r['label'] for r in read_json(ROOT / 'artifacts/class_mapping.json')]
-    baseline = read_json(ROOT / 'results/summary.json')
-    all_metrics, rows, cv = {}, [], {}
-    inference = read_json(REPORT / 'inference_verification.json') if (REPORT / 'inference_verification.json').exists() else {}
-    for name in ['cnn', 'mlp']:
-        shutil.copy2(ROOT / f'results/predictions/{name}_test.csv', REPORT / f'predictions/{name}_v1_fixed.csv')
-        shutil.copy2(ROOT / f'results/history/{name}.csv', REPORT / f'training_history/{name}_v1.csv')
-    paths = sorted((REPORT / 'predictions').glob('*.csv'))
+    labels=[r['label'] for r in read_json(ROOT/'artifacts/class_mapping.json')]
+    all_metrics,rows,cv={ },[],{}
+    paths=sorted((REPORT/'predictions').glob('yamnet_transfer_*.csv'))
     for path in paths:
         if path.stem.endswith('_misclassifications'):
             continue
-        frame = pd.read_csv(path)
-        if len(frame) not in (80, 400):
-            raise ValueError(f'Invalid prediction row count: {path}')
-        if len(frame) == 80 and frame.fold.nunique() != 1:
-            raise ValueError('A single-fold evaluation must contain one official fold')
-        metrics = score_predictions(frame, labels, len(frame))
-        metrics['predictions_sha256'] = sha256(path)
-        write_json(REPORT / 'metrics' / f'{path.stem}.json', metrics)
-        (REPORT / 'metrics' / f'{path.stem}_classification_report.txt').write_text(
-            classification_report(frame.true_index, frame.predicted_index, labels=list(range(10)), target_names=labels, digits=4, zero_division=0), encoding='utf-8')
-        all_metrics[path.stem] = metrics
-        if path.stem.endswith(('_fixed', '_oof')):
-            plot_predictions(path.stem, frame, labels, metrics)
-            row = {'model': path.stem, 'evaluation': '400-clip OOF' if len(frame) == 400 else 'exploratory fixed fold 5',
-                   **{k: metrics[k] for k in ['correct', 'count', 'accuracy', 'macro_f1', 'macro_roc_auc_ovr', 'macro_average_precision']}}
-            meta = REPORT / 'training_history' / f'{path.stem}.json'
-            if meta.exists():
-                training = read_json(meta)
-                row.update({key: training[key] for key in ['training_seconds', 'feature_extraction_seconds', 'parameter_count', 'model_bytes']})
-                row['parameter_count_scope'] = 'CNN' if path.stem.startswith('cnn_v2') else 'trainable transfer head only'
-                if path.stem.startswith('efficientnet_b0_mel'):
-                    row['backbone_bytes'] = (ROOT / 'models/accuracy_v2/efficientnet_backbone.pt').stat().st_size
-                elif path.stem.startswith('yamnet_transfer'):
-                    row['backbone_bytes'] = sum(p.stat().st_size for p in (ROOT / 'data/accuracy_v2_cache/tfhub').rglob('*') if p.is_file())
-                else:
-                    row['backbone_bytes'] = 0
-                row['deployment_bytes_including_backbone'] = row['model_bytes'] + row['backbone_bytes']
-            elif '_v1_' in path.stem:
-                training = baseline['models'][path.stem.split('_')[0]]['training']
-                row.update({'training_seconds': training['training_seconds'], 'parameter_count': training['parameter_count'],
-                            'model_bytes': (ROOT / f'models/{path.stem.split("_")[0]}_best.pt').stat().st_size})
-            inference_name = path.stem.removesuffix('_fixed')
-            if inference_name in inference:
-                row['end_to_end_seconds_one_clip_cpu'] = inference[inference_name]['end_to_end_seconds_one_clip']
-            rows.append(row)
-        if path.stem.endswith('_oof'):
-            if set(frame.fold) != set(range(1, 6)) or not (frame.groupby('fold').size() == 80).all():
-                raise ValueError('OOF requires all five folds with eighty clips each')
-            original = pd.read_csv(REPORT / 'split_manifest.csv')
-            if set(frame.filename) != set(original.filename):
-                raise ValueError('OOF does not cover the original dataset')
-            per_fold = []
-            for fold, group in frame.groupby('fold'):
-                s = score_predictions(group, labels, 80)
-                per_fold.append({'fold': int(fold), **{k: s[k] for k in ['correct', 'count', 'accuracy', 'macro_f1']}})
-            cv[path.stem.removesuffix('_oof')] = {'per_fold': per_fold,
-                'accuracy_mean': float(np.mean([r['accuracy'] for r in per_fold])),
-                'accuracy_std_sample': float(np.std([r['accuracy'] for r in per_fold], ddof=1)),
-                'macro_f1_mean': float(np.mean([r['macro_f1'] for r in per_fold])),
-                'macro_f1_std_sample': float(np.std([r['macro_f1'] for r in per_fold], ddof=1)),
-                'aggregate_correct': metrics['correct'], 'aggregate_count': 400, 'aggregate_macro_f1': metrics['macro_f1'],
-                'single_seed': True, 'std_definition': 'sample standard deviation over five outer folds, ddof=1'}
-            fig, ax = plt.subplots(figsize=(7, 4))
-            ax.plot([r['fold'] for r in per_fold], [r['accuracy'] for r in per_fold], 'o-', label='Accuracy')
-            ax.plot([r['fold'] for r in per_fold], [r['macro_f1'] for r in per_fold], 's-', label='Macro F1')
-            ax.set(xticks=range(1, 6), ylim=(0, 1.03), xlabel='Outer test fold', title=f'{path.stem}: fixed recipe, seed 42')
+        frame=pd.read_csv(path)
+        count=400 if path.stem.endswith('_oof') else 80
+        metrics=score_predictions(frame,labels,count)
+        if count==80 and frame.fold.nunique()!=1:
+            raise ValueError('Single-fold predictions must contain one official fold')
+        metrics['predictions_sha256']=sha256(path)
+        write_json(REPORT/'metrics'/f'{path.stem}.json',metrics)
+        (REPORT/'metrics'/f'{path.stem}_classification_report.txt').write_text(
+            classification_report(frame.true_index,frame.predicted_index,labels=list(range(10)),target_names=labels,digits=4,zero_division=0),encoding='utf-8')
+        all_metrics[path.stem]=metrics
+        if path.stem.endswith(('_fixed','_oof')):
+            plot_predictions(path.stem,frame,labels,metrics)
+            rows.append({'model':path.stem,'evaluation':'OOF' if count==400 else 'fixed test',
+                         **{k:metrics[k] for k in ['correct','count','accuracy','macro_f1','macro_roc_auc_ovr','macro_average_precision']}})
+        if count==400:
+            source=pd.read_csv(REPORT/'split_manifest.csv')
+            merged=frame.merge(source[['filename','fold','class_index']],on='filename',suffixes=('_prediction','_source'),validate='one_to_one')
+            if len(merged)!=400 or not np.array_equal(merged.fold_prediction,merged.fold_source) or not np.array_equal(merged.true_index,merged.class_index):
+                raise ValueError('OOF does not match original clips and labels')
+            if set(frame.fold)!=set(range(1,6)) or not (frame.groupby('fold').size()==80).all():
+                raise ValueError('Invalid OOF fold coverage')
+            per_fold=[]
+            for fold,group in frame.groupby('fold'):
+                scores=score_predictions(group,labels,80)
+                per_fold.append({'fold':int(fold),**{k:scores[k] for k in ['correct','count','accuracy','macro_f1']}})
+            cv['yamnet_transfer']={'per_fold':per_fold,
+                'accuracy_mean':float(np.mean([r['accuracy'] for r in per_fold])),
+                'accuracy_std_sample':float(np.std([r['accuracy'] for r in per_fold],ddof=1)),
+                'macro_f1_mean':float(np.mean([r['macro_f1'] for r in per_fold])),
+                'macro_f1_std_sample':float(np.std([r['macro_f1'] for r in per_fold],ddof=1)),
+                'aggregate_correct':metrics['correct'],'aggregate_count':400,'aggregate_macro_f1':metrics['macro_f1'],
+                'single_seed':True,'std_definition':'sample standard deviation over five outer folds, ddof=1'}
+            fig,ax=plt.subplots(figsize=(7,4))
+            ax.plot([r['fold'] for r in per_fold],[r['accuracy'] for r in per_fold],'o-',label='Accuracy')
+            ax.plot([r['fold'] for r in per_fold],[r['macro_f1'] for r in per_fold],'s-',label='Macro F1')
+            ax.set(xticks=range(1,6),ylim=(0,1.03),xlabel='Outer test fold',title='YAMNet OOF: seed 42')
             ax.legend()
-            save(fig, f'{path.stem}_fold_metrics')
-    for path in sorted((REPORT / 'training_history').glob('*.csv')):
-        history = pd.read_csv(path)
-        fig, axes = plt.subplots(1, 2, figsize=(10, 4))
-        for phase in ['train', 'validation']:
-            axes[0].plot(history.epoch, history[f'{phase}_loss'], label=phase)
-            axes[1].plot(history.epoch, history[f'{phase}_accuracy'], label=phase)
-        axes[0].set(xlabel='Epoch', ylabel='Cross entropy', title=f'{path.stem}: loss')
-        axes[1].set(xlabel='Epoch', ylabel='Accuracy', title=f'{path.stem}: accuracy', ylim=(0, 1.03))
+            save(fig,'yamnet_transfer_oof_fold_metrics')
+    for path in sorted((REPORT/'training_history').glob('yamnet_transfer_*.csv')):
+        history=pd.read_csv(path)
+        fig,axes=plt.subplots(1,2,figsize=(10,4))
+        for phase in ['train','validation']:
+            axes[0].plot(history.epoch,history[f'{phase}_loss'],label=phase)
+            axes[1].plot(history.epoch,history[f'{phase}_accuracy'],label=phase)
+        axes[0].set(xlabel='Epoch',ylabel='Cross entropy',title=f'{path.stem}: loss')
+        axes[1].set(xlabel='Epoch',ylabel='Accuracy',title=f'{path.stem}: accuracy',ylim=(0,1.03))
         for ax in axes:
             ax.legend()
-        save(fig, f'{path.stem}_training')
-    comparison = pd.DataFrame(rows)
-    comparison.to_csv(REPORT / 'comparison.csv', index=False)
-    fixed = comparison[comparison['evaluation'] == 'exploratory fixed fold 5']
-    fig, ax = plt.subplots(figsize=(10, 5))
-    x = np.arange(len(fixed))
-    ax.bar(x - .18, fixed.accuracy, width=.36, label='Accuracy')
-    ax.bar(x + .18, fixed.macro_f1, width=.36, label='Macro F1')
-    ax.set(xticks=x, xticklabels=fixed.model, ylim=(0, 1.05), title='Exploratory fixed split: 80 original fold-5 clips')
-    plt.setp(ax.get_xticklabels(), rotation=25, ha='right')
-    ax.legend()
-    save(fig, 'model_comparison_fixed')
-    fig, axes = plt.subplots(1, 3, figsize=(14, 5))
-    resource_labels = fixed.model.tolist()
-    axes[0].bar(resource_labels, fixed.training_seconds.fillna(0), label='training loop')
-    if 'feature_extraction_seconds' in fixed:
-        axes[0].bar(resource_labels, fixed.feature_extraction_seconds.fillna(0), bottom=fixed.training_seconds.fillna(0), label='frozen feature extraction')
-    axes[0].set(ylabel='Seconds', title='Measured training and feature time')
-    axes[0].legend(fontsize=7)
-    sizes = fixed['deployment_bytes_including_backbone'].fillna(fixed.model_bytes) if 'deployment_bytes_including_backbone' in fixed else fixed.model_bytes
-    axes[1].bar(resource_labels, sizes / 1024**2)
-    axes[1].set(ylabel='MiB', title='Checkpoint + frozen backbone')
-    if 'end_to_end_seconds_one_clip_cpu' in fixed:
-        latency = fixed.dropna(subset=['end_to_end_seconds_one_clip_cpu'])
-        axes[2].bar(latency.model, latency.end_to_end_seconds_one_clip_cpu)
-    axes[2].set(ylabel='Seconds', title='CPU inference, one training clip')
-    for ax in axes:
-        plt.setp(ax.get_xticklabels(), rotation=40, ha='right', fontsize=7)
-    save(fig, 'model_resources')
-    write_json(REPORT / 'metrics.json', all_metrics)
-    write_json(REPORT / 'cross_validation_summary.json', cv)
-    selection = read_json(REPORT / 'selection.json')
-    lines = ['# SoundSense Accuracy V2 — нақты нәтижелер', '',
-             'Барлық көрсеткіш сақталған нақты болжамдардан есептелді. Seed=42; ресми ESC-10 fold-тары сақталды.', '',
-             '| Модель / бағалау | Дұрыс / барлығы | Accuracy | Macro-F1 |', '|---|---:|---:|---:|']
+        save(fig,f'{path.stem}_training')
+    write_json(REPORT/'metrics.json',all_metrics)
+    write_json(REPORT/'cross_validation_summary.json',cv)
+    pd.DataFrame(rows).to_csv(REPORT/'yamnet_results.csv',index=False)
+    lines=['# SoundSense YAMNet нәтижелері','',
+           'Бұл есеп AudioSet-те алдын ала оқытылған frozen YAMNet және ESC-10 үшін жаңа head нәтижелерін сипаттайды. Қолданба YAMNet пен EfficientNet-B0 модельдерін қолдайды.',
+           'MobileNetV1 терең CNN backbone 1024 embedding береді. Train-only mean/std → Dropout 0.2 → Linear 1024→10.',
+           'Оқытылатын head параметрлері 10 250. Backbone қайта оқытылмаған.','',
+           '| Бағалау | Дұрыс / барлығы | Accuracy | Macro F1 | ROC AUC | Macro AP |','|---|---:|---:|---:|---:|---:|']
     for row in rows:
-        lines.append(f'| {row["model"]} | {row["correct"]}/{row["count"]} | {row["accuracy"]:.2%} | {row["macro_f1"]:.4f} |')
-    lines += ['', f'Қолданбаға таңдалған модель: **{selection["name"]}**. Таңдау fold-4 validation cross-entropy арқылы, жаңа fold-5 бағалауынан бұрын бекітілді.', '',
-              '## Бес fold бойынша бағалау', '']
-    for name, summary in cv.items():
-        lines.append(f'- {name}: accuracy {summary["accuracy_mean"]:.2%} ± {summary["accuracy_std_sample"]:.2%}; macro-F1 {summary["macro_f1_mean"]:.4f} ± {summary["macro_f1_std_sample"]:.4f}. Жиынтық {summary["aggregate_correct"]}/400, OOF macro-F1={summary["aggregate_macro_f1"]:.4f}.')
-    lines += ['', 'Стандарттық ауытқу бес fold бойынша ddof=1 арқылы есептелді; бұл сенімділік интервалы емес.', '',
-              '## Өзгерістер және дәлелдер', '',
-              '- CNN V2: тек train дыбысына уақыт ығысуы, gain, әлсіз шу және SpecAugment; AdamW және validation scheduler.',
-              '- EfficientNet: нақты ImageNet pretrained backbone бекітілген; 3 арналы 224×224 Mel, ImageNet normalization; жаңа 10-класты head.',
-              '- YAMNet орындалса: ресми AudioSet pretrained модельдің 1024-өлшемді frame embedding-терінің орташа мәні; ESC-10 үшін бөлек 10-класты head. 521 AudioSet label-і ESC-10 label-і ретінде қолданылмайды.',
-              '- Нақты орындалған модельдер мен қателер: `run_status.json`, `blockers.json`; ортамен командалар: `environment.json`.',
-              '- `predictions/`: бастапқы файл, нақты/болжанған класс, 10 ықтималдық, қателер тізімі. `training_history/`: нақты epoch журналдары.',
-              '- `plots/`: 300 dpi confusion matrix, normalized matrix, F1, ROC, PR, оқыту және fold графиктері. `metrics/`: сандық негізі.', '',
-              '## Шектеулер', '',
-              'ESC-10 шағын: барлығы 400 дыбыс, әр test fold-та 80 дыбыс, әр класта 8 мысал. Бір fold-та бір қате accuracy-ді 1.25 пайыздық тармаққа өзгертеді. '
-              'Бір seed қолданылды; fold нәтижелері өзгереді. Fold 5 бұрын белгілі болғандықтан fixed-split тәжірибе exploratory. CV кандидаттары fixed validation бойынша таңдалды: бұл тәуелсіз жаңа сыртқы dataset емес, кандидат іздеудің толық nested бағалауы емес. '
-              'AudioSet/ImageNet pretraining көздерінің ESC аудиосымен ықтимал қабаттасуы тексерілген жоқ. 90% алдын ала кепілдендірілген нәтиже емес; кестеде тек өлшенген сандар берілген. '
-              'Open-world белгісіз санаттар қамтылмайды; softmax сенімділігі калибрленбеген. Барлық 400 дыбыспен deployment retraining жасалмады; app validation арқылы таңдалған fixed checkpoint-ті қолданады.', '',
-              '## Іске қосу', '', '```powershell', '.\\.runtime\\python311\\python.exe app.py', '.\\.runtime\\python311\\python.exe -m pytest -q', '```', '',
-              'Негізгі орнату және қайталау: `experiments/accuracy_v2/README.md`.']
-    quality_path = REPORT / 'quality_checks.json'
-    if quality_path.exists():
-        quality = read_json(quality_path)
-        lines += ['', '## Сапаны тексеру', '',
-                  f'Нақты pytest: **{quality["pytest_passed"]} passed**, {quality["pytest_skipped"]} skipped; exit code={quality["pytest_exit_code"]}.',
-                  'Бастапқы checkpoint-тер SHA-256 арқылы сақталғаны тексерілді. Train/app ықтималдықтары сәйкес, қайталама inference детерминді. Екі модельдің жергілікті Gradio HTTP API, бес output және default selector тексерілді.',
-                  f'Барлық {quality["plot_count"]} нәтиже графигінің resolution метадерегі 300 dpi. Толық журнал: `pytest.txt`, `verification.log`, `quality_checks.json`.']
-    if 'yamnet_transfer' in inference:
-        elapsed = inference['yamnet_transfer']['end_to_end_seconds_one_clip']
-        lines += ['', '## Inference уақыты', '',
-                  f'Осы компьютерде YAMNet толық CPU inference бір train клипке **{elapsed:.2f} секунд** алды. Бұл бөлек TensorFlow process-інің іске қосылуын қамтиды; әр талдауда осы process қайта іске қосылады. '
-                  'CNN v1 және Best V2 таңдауын пайдалануға болады. `comparison.csv` пен `inference_verification.json` нақты өлшемдерді сақтайды. '
-                  'Барлық latency бір клипке тізбектей өлшенді; бастапқы librosa/JIT және framework startup әр модельде әртүрлі. Бұл бақыланатын көп-қайталаулы жылдамдық benchmark-і емес.']
-    (REPORT / 'report_kk.md').write_text('\n'.join(lines) + '\n', encoding='utf-8')
-    methodology = '''# Accuracy V2 әдіснамасы
-
-Дерек: Piczak, K. J. (2015), ESC: Dataset for Environmental Sound Classification.
-https://github.com/karolpiczak/ESC-50 ; ESC-10 CC BY 3.0. Түпнұсқа лицензия мен
-авторлар `data/metadata/LICENSE`, `attributions.csv` ішінде сақталған.
-
-Fixed split: train fold 1–3 (240), validation fold 4 (80), test fold 5 (80).
-Seed 42. Checkpoint ең төмен validation cross-entropy бойынша сақталады.
-Кандидат та осы validation бойынша таңдалады; test accuracy таңдау үшін
-қолданылмайды. Әр аяқталған checkpoint үшін сақталған test болжамы қайта
-қолданылады, оның SHA-256 тексеріледі. Бұрын белгілі fold-5 нәтижесі ашық көрсетіледі.
-
-5-fold CV: test K, validation K−1 (1 үшін 5), қалған 3 fold train. Әр бастапқы
-клиптің OOF болжамы бір рет қана кездеседі. Бастапқы source recording бір fold-та
-сақталады. Train-ға арналған augmentation validation/test-ке қолданылмайды.
-Scaler mean/std тек train partition-нан есептеледі; checkpoint ішінде сақталады.
-Frozen embedding extraction label-дерді қолданбайды. YAMNet subprocess-іне
-label немесе class index жіберілмейді; тек 16 кГц mono waveform мен файл атаулары.
-
-Accuracy = дұрыс болжам / бастапқы клип саны. Macro-F1 — 10 класс F1 орташа мәні.
-ROC әр классқа one-vs-rest есептеледі; macro ROC-AUC — класс AUC орташа мәні.
-PR көрсеткіші — sklearn non-interpolated average precision, трапециялық PR-AUC
-емес; macro AP — он AP орташа мәні. Қисықтарды көрсету үшін ғана interpolation
-қолданылады. Confusion matrix жолы — нақты класс, бағаны — болжанған класс.
-Fold standard deviation ddof=1; aggregate OOF F1 fold F1 орташа мәнінен өзгеше.
-
-EfficientNet тек frozen backbone режимінде; head optimizer шағын batch-пен
-оқытылады, backbone BatchNorm eval режимінде қалады. YAMNet те frozen, CPU
-арқылы extraction; жаңа head PyTorch CUDA қолжетімді болса GPU-да оқиды.
-CNN V2 train-only shift ±0.35 с, gain ±4 dB, SNR 25–35 dB және modest
-frequency/time mask қолданады. Толық recipe `config.json` ішінде бекітілген.
-
-Training time transfer head үшін backbone extraction уақытын қамтымайды;
-`comparison.csv` ішінде extraction бөлек көрсетіледі. Prediction receipt-теріндегі
-head timing толық audio decoding/backbone inference latency емес. App толық
-inference уақыты бөлек end-to-end тексеру журналында өлшенеді.
-
-Ресми implementation деректері:
-https://www.tensorflow.org/tutorials/audio/transfer_learning_audio
-https://docs.pytorch.org/vision/main/models/generated/torchvision.models.efficientnet_b0.html
-'''
-    (REPORT / 'methodology_kk.md').write_text(methodology, encoding='utf-8')
+        lines.append(f'| {row["evaluation"]} | {row["correct"]}/{row["count"]} | {row["accuracy"]:.2%} | {row["macro_f1"]:.4f} | {row["macro_roc_auc_ovr"]:.4f} | {row["macro_average_precision"]:.4f} |')
+    lines+=['','## Әдіснама','',
+        'ESC-10: 400 бастапқы клип, он санат, ресми бес fold. Fixed train 1–3 (240), validation 4 (80), test 5 (80).',
+        'Seed 42. AdamW lr=0.001 weight_decay=0.001 batch=16; max 160 epoch patience=25. Checkpoint ең төмен validation cross-entropy арқылы таңдалады.',
+        'YAMNet frontend: 16 кГц mono; STFT 25 мс және 10 мс; 64 Mel жолағы 125–7500 Гц; log offset 0.001; патч 96×64.',
+        'Бес секунд қысқа болса нөлмен толықтырылады, ұзын болса алғашқы бөлігі алынады. Frame embedding уақыт бойынша орташаланады.',
+        'CV: test K, validation K−1 (1 үшін 5), қалған үш fold train. Әр клип бір OOF болжам алады. Fold 5 fixed checkpoint-ін қолданады.',
+        'Scaler тек train арқылы fit жасалады. Backbone frozen, waveform augmentation және SpecAugment қолданылмаған.','',
+        '## Графиктер','']
+    plots=sorted((REPORT/'plots').glob('yamnet_transfer_*.png'))
+    for path in plots:
+        lines.append(f'- [{path.stem}](plots/{path.name})')
+    lines+=['','## Шектеулер','',
+        '400 клип және бір seed. Fixed test бұрын белгілі болған; бастапқы модель іріктеуі fixed validation арқылы жүргізілген. Бұл толық nested model selection емес.',
+        'AudioSet пен ESC жазбаларының ықтимал қабаттасуы жеке тексерілмеген. Fold SD confidence interval емес.',
+        'Белгісіз дыбыстар да он санаттың біріне жіктеледі. Softmax калибрленбеген. Сыртқы test, multi-label және оқиғаны уақыт бойынша локализациялау бағаланбаған.',
+        'Барлық 400 клиппен соңғы deployment retraining жасалмаған. Бастапқы бес YAMNet checkpoint пен тарих сақталған.','',
+        'Ресми YAMNet: https://www.tensorflow.org/tutorials/audio/transfer_learning_audio',
+        'ESC-50 және ESC-10: https://github.com/karolpiczak/ESC-50']
+    (REPORT/'report_kk.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
+    (REPORT/'methodology_kk.md').write_text('\n'.join(lines[lines.index('## Әдіснама'):lines.index('## Графиктер')]).rstrip()+'\n',encoding='utf-8')
+    if sync_results:
+        target=ROOT/'results/figures'
+        target.mkdir(parents=True,exist_ok=True)
+        for path in plots:
+            shutil.copy2(path,target/path.name)
+        inventory=[{'path':str(p.relative_to(ROOT)).replace('\\','/'),'sha256':sha256(p)} for p in sorted(target.glob('*.png'))]
+        write_json(target/'inventory.json',inventory)
+        write_json(ROOT/'results/summary.json',{'model':'yamnet_transfer','metrics':all_metrics,'cross_validation':cv})
+        (ROOT/'docs/coursework_report_kk.md').write_text(
+            (REPORT/'report_kk.md').read_text(encoding='utf-8').replace('](plots/','](../reports/accuracy_v2/plots/'),encoding='utf-8')
+        shutil.copy2(REPORT/'methodology_kk.md',ROOT/'docs/methodology_kk.md')
+    print(f'YAMNet report: {len(plots)} result plots, {len(all_metrics)} evaluations',flush=True)
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     generate()

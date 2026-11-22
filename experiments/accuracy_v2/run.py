@@ -1,19 +1,16 @@
 """Run real fixed-split training, one frozen test evaluation, then official CV.
 
 PowerShell: python -m experiments.accuracy_v2.run --yamnet-python PATH
-Use --models cnn_v2 efficientnet_b0_mel if TensorFlow is unavailable.
+Only YAMNet is supported. Saved checkpoints are verified unless --retrain is explicit.
 """
 import argparse
 import hashlib
-import importlib.metadata
-import json
 import os
 from pathlib import Path
 import shutil
 import subprocess
 import sys
 import time
-import traceback
 
 import numpy as np
 import pandas as pd
@@ -21,59 +18,47 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader, TensorDataset
 
-from soundsense.common import ROOT, config, identity, read_json, seed_everything, sha256, write_json
-from soundsense.preprocess import load_audio, logmel
-from .core import (CACHE, MODELS, REPORT, RECIPE_PATH, YAMNET_URL, build_candidate,
-                   cache_environment, cache_key, efficientnet_backbone,
-                   efficientnet_input, load_candidate, manifest, raw_mels, split_masks)
+from soundsense.common import ROOT, config, identity, read_json, seed_everything, sha256, write_json, code_identity
+from soundsense.preprocess import load_audio
+from .core import (CACHE, MODELS, REPORT, RECIPE_PATH, YAMNET_URL, MODEL_NAME,
+                   build_candidate, cache_environment, cache_key, load_candidate, manifest, split_masks)
 
 
-def prepare_embeddings(df, name, mels, device, yamnet_python=None):
+def prepare_embeddings(df, yamnet_python=None):
+    name = MODEL_NAME
     start = time.perf_counter()
     recipe = read_json(RECIPE_PATH)[name]
     key = cache_key(df, name, recipe)
-    path = CACHE / f'{name}_embeddings.npz'
+    # New training never replaces the signed deployment embedding cache.
+    directory = CACHE / 'retraining' / key
+    directory.mkdir(parents=True, exist_ok=True)
+    path = directory / f'{name}_embeddings.npz'
     info = path.with_suffix('.json')
-    if path.exists() and info.exists() and read_json(info)['key'] == key and read_json(info)['sha256'] == sha256(path):
+    if path.exists() and info.exists() and read_json(info)['key'] == key:
+        if read_json(info)['sha256'] != sha256(path):
+            raise ValueError('YAMNet embedding cache checksum mismatch')
         with np.load(path, allow_pickle=False) as z:
-            if z['filenames'].tolist() != df.filename.tolist():
+            if z['filenames'].tolist() != df.filename.tolist() or z['key'].item() != key:
                 raise ValueError('Embedding cache order mismatch')
-            return z['embeddings'].copy(), read_json(info)
-    if name == 'efficientnet_b0_mel':
-        backbone = efficientnet_backbone(pretrained=True).to(device)
-        backbone_path = MODELS / 'efficientnet_backbone.pt'
-        torch.save(backbone.cpu().state_dict(), backbone_path)
-        backbone.to(device)
-        values = []
-        with torch.inference_mode():
-            for i in range(0, len(mels), 8):
-                x = efficientnet_input(mels[i:i+8]).to(device)
-                values.append(backbone(x).cpu().numpy())
-                if (i + 8) % 80 == 0:
-                    print(f'EfficientNet embeddings {i+8}/{len(mels)}', flush=True)
-        embeddings = np.concatenate(values).astype(np.float32)
-        np.savez_compressed(path, embeddings=embeddings, filenames=df.filename.to_numpy(dtype=str), key=np.asarray(key))
-        provenance = {'backbone_sha256': sha256(backbone_path), 'pretrained': 'IMAGENET1K_V1',
-                      'weights_url': 'https://download.pytorch.org/models/efficientnet_b0_rwightman-7f5810bc.pth'}
-        del backbone
-        if device.type == 'cuda':
-            torch.cuda.empty_cache()
-    else:
-        if not yamnet_python:
-            raise RuntimeError('YAMNet extraction needs --yamnet-python pointing to isolated TensorFlow runtime')
-        wave_path = CACHE / 'waveforms_16k.npy'
-        cfg = config()['preprocessing']
-        waves = np.stack([load_audio(ROOT / 'data/raw' / filename, cfg) for filename in df.filename])
-        np.save(wave_path, waves, allow_pickle=False)
-        request = CACHE / 'yamnet_request.json'
-        write_json(request, {'waveforms': str(wave_path), 'filenames': df.filename.tolist(), 'key': key, 'model_url': YAMNET_URL})
-        command = [str(yamnet_python), str(Path(__file__).with_name('extract_yamnet.py')), '--request', str(request), '--output', str(path)]
-        subprocess.run(command, check=True, timeout=1200, env=os.environ.copy())
-        with np.load(path, allow_pickle=False) as z:
-            embeddings = z['embeddings'].copy()
-        provenance = {'pretrained': YAMNET_URL, 'pooling': 'mean over frames; 1024 features',
-                      'extraction': 'CPU frozen model, no labels passed to subprocess'}
-    if embeddings.shape[0] != 400 or not np.isfinite(embeddings).all():
+            values = z['embeddings'].copy()
+        if values.shape != (len(df), 1024) or not np.isfinite(values).all():
+            raise ValueError('Invalid cached YAMNet embeddings')
+        return values, read_json(info)
+    if not yamnet_python:
+        raise RuntimeError('YAMNet extraction needs --yamnet-python pointing to isolated TensorFlow runtime')
+    wave_path = directory / 'waveforms_16k.npy'
+    cfg = config()['preprocessing']
+    waves = np.stack([load_audio(ROOT / 'data/raw' / filename, cfg) for filename in df.filename])
+    np.save(wave_path, waves, allow_pickle=False)
+    request = directory / 'yamnet_request.json'
+    write_json(request, {'waveforms': str(wave_path), 'filenames': df.filename.tolist(), 'key': key, 'model_url': YAMNET_URL})
+    command = [str(yamnet_python), str(Path(__file__).with_name('extract_yamnet.py')), '--request', str(request), '--output', str(path)]
+    subprocess.run(command, check=True, timeout=1200, env=os.environ.copy())
+    with np.load(path, allow_pickle=False) as z:
+        embeddings = z['embeddings'].copy()
+    provenance = {'pretrained': YAMNET_URL, 'pooling': 'mean over frames; 1024 features',
+                  'extraction': 'CPU frozen model, no labels passed to subprocess'}
+    if embeddings.shape != (400, 1024) or not np.isfinite(embeddings).all():
         raise ValueError('Nonfinite or incomplete frozen embeddings')
     provenance.update({'key': key, 'sha256': sha256(path), 'seconds': time.perf_counter() - start,
                        'dimension': int(embeddings.shape[1]), 'labels_used': False})
@@ -81,50 +66,8 @@ def prepare_embeddings(df, name, mels, device, yamnet_python=None):
     return embeddings, provenance
 
 
-def augmented_train_mels(df, train_mask, recipe, mels):
-    subset = df.loc[train_mask]
-    key = cache_key(subset, 'cnn_v2_wave_augmentation', recipe)
-    path = CACHE / f'augmented_{key[:16]}.npz'
-    if path.exists():
-        with np.load(path, allow_pickle=False) as z:
-            return z['variants'].copy()
-    rng = np.random.default_rng(read_json(RECIPE_PATH)['seed'])
-    cfg = config()['preprocessing']
-    variants = [mels[train_mask]]
-    for variant in range(recipe['waveform_variants']):
-        result = []
-        for row in subset.itertuples():
-            y = load_audio(ROOT / 'data/raw' / row.filename, cfg)
-            shift = int(rng.uniform(-recipe['shift_seconds'], recipe['shift_seconds']) * cfg['sample_rate'])
-            # Shift with zero fill; no artificial circular splice.
-            if shift > 0:
-                y = np.pad(y[:-shift], (shift, 0))
-            elif shift < 0:
-                y = np.pad(y[-shift:], (0, -shift))
-            y = y * 10 ** (rng.uniform(-recipe['gain_db'], recipe['gain_db']) / 20)
-            snr = rng.uniform(*recipe['noise_snr_db'])
-            noise = rng.normal(0, max(float(np.sqrt(np.mean(y*y))), 1e-8) / 10 ** (snr / 20), len(y))
-            result.append(logmel((y + noise).astype(np.float32), cfg))
-        variants.append(np.stack(result))
-        print(f'CNN train-only waveform variant {variant+1} complete', flush=True)
-    values = np.stack(variants).astype(np.float32)
-    np.savez_compressed(path, variants=values)
-    return values
-
-
-def specaugment(x, recipe):
-    x = x.clone()
-    for i in range(len(x)):
-        fw = int(torch.randint(0, recipe['frequency_mask'] + 1, ()).item())
-        tw = int(torch.randint(0, recipe['time_mask'] + 1, ()).item())
-        fs = int(torch.randint(0, x.shape[-2] - fw + 1, ()).item())
-        ts = int(torch.randint(0, x.shape[-1] - tw + 1, ()).item())
-        x[i, :, fs:fs+fw, :] = 0
-        x[i, :, :, ts:ts+tw] = 0
-    return x
-
-
-def train_candidate(name, features, df, test_fold, device, mels, provenance):
+def train_candidate(features, df, test_fold, device, provenance):
+    name = MODEL_NAME
     recipes = read_json(RECIPE_PATH)
     recipe = recipes[name]
     train, val, test = split_masks(df, test_fold)
@@ -137,6 +80,7 @@ def train_candidate(name, features, df, test_fold, device, mels, provenance):
     stable_provenance = {key: value for key, value in provenance.items() if key != 'seconds'}
     signature = identity({'recipe': recipe, 'seed': recipes['seed'], 'test_fold': test_fold,
                           'files': df[['filename', 'sha256']].to_dict('records'), 'code': code,
+                          'head_and_waveform_code': code_identity(['models.py', 'preprocess.py']),
                           'feature_provenance': stable_provenance, 'torch': str(torch.__version__)})
     if path.exists() and meta_path.exists():
         saved = read_json(meta_path)
@@ -147,15 +91,11 @@ def train_candidate(name, features, df, test_fold, device, mels, provenance):
         print(f'Reusing completed {run_id}', flush=True)
         return saved
     seed_everything(recipes['seed'])
-    dimension = None if name == 'cnn_v2' else int(features.shape[1])
+    dimension = 1024
     model = build_candidate(name, dimension).to(device)
-    mean = features[train].mean(axis=0, dtype=np.float64) if dimension else float(features[train].mean(dtype=np.float64))
-    std = np.maximum(features[train].std(axis=0, dtype=np.float64), 1e-6) if dimension else max(float(features[train].std(dtype=np.float64)), 1e-6)
+    mean = features[train].mean(axis=0, dtype=np.float64)
+    std = np.maximum(features[train].std(axis=0, dtype=np.float64), 1e-6)
     normalized = ((features - mean) / std).astype(np.float32)
-    variants = None
-    if name == 'cnn_v2':
-        variants = ((augmented_train_mels(df, train, recipe, mels) - mean) / std).astype(np.float32)[:, :, None]
-        normalized = normalized[:, None]
     labels = torch.tensor(df.class_index.to_numpy(), dtype=torch.long)
     xt = torch.from_numpy(normalized[train])
     yt = labels[train]
@@ -169,9 +109,6 @@ def train_candidate(name, features, df, test_fold, device, mels, provenance):
     if device.type == 'cuda':
         torch.cuda.reset_peak_memory_stats()
     for epoch in range(1, recipe['epochs'] + 1):
-        if variants is not None:
-            selected = np.random.randint(len(variants), size=len(xt))
-            xt = torch.from_numpy(variants[selected, np.arange(len(xt))])
         loader = DataLoader(TensorDataset(xt, yt), batch_size=recipe['batch_size'], shuffle=True, generator=generator)
         row = {'epoch': epoch, 'learning_rate': optimizer.param_groups[0]['lr']}
         for phase, batches in [('train', loader), ('validation', vl)]:
@@ -181,8 +118,6 @@ def train_candidate(name, features, df, test_fold, device, mels, provenance):
             with torch.set_grad_enabled(training):
                 for x, y in batches:
                     x, y = x.to(device), y.to(device)
-                    if training and variants is not None:
-                        x = specaugment(x, recipe)
                     if training:
                         optimizer.zero_grad(set_to_none=True)
                     logits = model(x)
@@ -241,8 +176,6 @@ def evaluate_candidate(meta, features, df, device):
     model, payload = load_candidate(ROOT / meta['checkpoint'], device)
     _, _, test = split_masks(df, payload['test_fold'])
     x = ((features[test] - np.asarray(payload['mean'])) / np.asarray(payload['std'])).astype(np.float32)
-    if payload['name'] == 'cnn_v2':
-        x = x[:, None]
     probabilities = []
     start = time.perf_counter()
     with torch.inference_mode():
@@ -260,82 +193,83 @@ def evaluate_candidate(meta, features, df, device):
     result.to_csv(path, index=False)
     write_json(receipt, {'checkpoint_sha256': meta['checkpoint_sha256'], 'csv_sha256': sha256(path),
                          'test_fold': payload['test_fold'], 'count': len(result), 'probability_order': labels,
-                         'head_or_cnn_seconds_per_clip': elapsed / len(result),
-                         'timing_excludes_frozen_feature_extraction': payload['name'] != 'cnn_v2',
+                         'head_seconds_per_clip': elapsed / len(result),
+                         'timing_excludes_frozen_feature_extraction': True,
                          'exploratory': True, 'evaluation_calls': 1})
     return result
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('--models', nargs='+', choices=['cnn_v2', 'efficientnet_b0_mel', 'yamnet_transfer'], default=['cnn_v2', 'efficientnet_b0_mel', 'yamnet_transfer'])
-    parser.add_argument('--yamnet-python', type=Path)
-    parser.add_argument('--cv-top', type=int, default=2)
-    parser.add_argument('--train-only', action='store_true', help='Prepare and train on folds 1-3; do not select or evaluate test clips yet')
-    args = parser.parse_args()
+
+def verify_saved_runs():
+    """Reuse the signed historical experiment without pretending code is unchanged."""
+    result=[]
+    for fold in range(1,6):
+        run_id=f'{MODEL_NAME}_fixed' if fold==5 else f'{MODEL_NAME}_fold{fold}'
+        meta=read_json(REPORT/'training_history'/f'{run_id}.json')
+        path=ROOT/meta['checkpoint']
+        history=REPORT/'training_history'/f'{run_id}.csv'
+        if sha256(path)!=meta['checkpoint_sha256'] or sha256(history)!=meta['history_sha256']:
+            raise ValueError(f'Historical YAMNet artifacts changed: {run_id}')
+        _,payload=load_candidate(path)
+        if payload['test_fold']!=fold:
+            raise ValueError('Wrong historical test fold')
+        result.append(meta)
+    return result
+
+
+def main(argv=None):
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--yamnet-python',type=Path,default=Path(os.environ.get('SOUNDSENSE_YAMNET_PYTHON',ROOT/'.runtime/yamnet311/python.exe')))
+    parser.add_argument('--retrain',action='store_true',help='Train a new experiment in a separate empty output directory')
+    parser.add_argument('--output-dir',type=Path,help='New directory inside this project; required for --retrain')
+    parser.add_argument('--train-only',action='store_true')
+    args=parser.parse_args(argv)
+    global MODELS, REPORT
+    if not args.retrain:
+        if args.output_dir or args.train_only:
+            parser.error('--output-dir and --train-only require --retrain')
+        verify_saved_runs()
+        from .report import generate
+        generate()
+        print('Verified and reused five saved YAMNet heads; no retraining',flush=True)
+        return
+    if args.output_dir is None:
+        parser.error('--retrain requires --output-dir to preserve the deployed model')
+    output=args.output_dir.resolve()
+    if not output.is_relative_to(ROOT) or output==ROOT or (output.exists() and any(output.iterdir())):
+        parser.error('--output-dir must be a new or empty directory inside this project')
+    MODELS,REPORT=output/'models',output/'reports'
     cache_environment()
-    for directory in [MODELS, REPORT / 'training_history', REPORT / 'predictions', REPORT / 'plots']:
-        directory.mkdir(parents=True, exist_ok=True)
+    for directory in [MODELS,REPORT/'training_history',REPORT/'predictions',REPORT/'plots']:
+        directory.mkdir(parents=True,exist_ok=True)
     torch.set_num_threads(4)
     seed_everything(42)
-    df = manifest()
-    df.to_csv(REPORT / 'split_manifest.csv', index=False)
-    shutil.copy2(RECIPE_PATH, REPORT / 'config.json')
-    packages = {d.metadata['Name']: d.version for d in importlib.metadata.distributions()}
-    write_json(REPORT / 'environment.json', {'python': sys.version, 'executable': sys.executable, 'packages': packages,
-               'torch_cuda': torch.cuda.is_available(), 'device': torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'CPU',
-               'command': subprocess.list2cmdline([sys.executable] + sys.argv), 'seed': 42,
-               'config_sha256': sha256(RECIPE_PATH), 'source_manifest_sha256': sha256(ROOT / 'data/metadata/manifest.csv')})
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    mels = raw_mels(df)
-    feature_sets, provenance, trained, blockers = {}, {}, [], {}
-    # All fixed-split training and validation completes BEFORE any new test access.
-    for name in args.models:
-        try:
-            if name == 'cnn_v2':
-                feature_sets[name], provenance[name] = mels, {'pretrained': False, 'feature_digest': hashlib.sha256(mels.tobytes()).hexdigest()}
-            else:
-                feature_sets[name], provenance[name] = prepare_embeddings(df, name, mels, device, args.yamnet_python)
-            trained.append(train_candidate(name, feature_sets[name], df, 5, device, mels, provenance[name]))
-        except Exception:
-            blockers[name] = traceback.format_exc()
-            print(blockers[name], flush=True)
-            write_json(REPORT / 'blockers.json', blockers)
-    if not trained:
-        raise RuntimeError('No candidate trained successfully; see blockers.json')
+    df=manifest()
+    df.to_csv(REPORT/'split_manifest.csv',index=False)
+    shutil.copy2(RECIPE_PATH,REPORT/'config.json')
+    write_json(REPORT/'environment.json',{'python':sys.version,'torch':str(torch.__version__),
+               'config_sha256':sha256(RECIPE_PATH),'seed':42,'new_training':True})
+    device=torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    features,provenance=prepare_embeddings(df,args.yamnet_python)
+    fixed=train_candidate(features,df,5,device,provenance)
     if args.train_only:
-        write_json(REPORT / 'training_stage.json', {'trained': trained, 'blockers': blockers, 'test_evaluated': False})
+        write_json(REPORT/'training_stage.json',{'model':MODEL_NAME,'trained':[fixed],'test_evaluated':False})
         return
-    ranked = sorted(trained, key=lambda row: row['validation_loss'])
-    winner = ranked[0]
-    cv_names = [row['name'] for row in ranked[:max(0, args.cv_top)]]
-    selection = {'name': winner['name'], 'checkpoint': winner['checkpoint'], 'checkpoint_sha256': winner['checkpoint_sha256'],
-                 'rule': 'minimum fixed-split fold-4 validation loss, frozen before new fold-5 evaluation and CV',
-                 'validation_ranking': [{'name': r['name'], 'validation_loss': r['validation_loss'], 'validation_accuracy': r['validation_accuracy']} for r in ranked],
-                 'cv_candidates_frozen_before_outer_evaluation': cv_names, 'deployment_trained_all_data': False,
-                 'caveat': 'ESC-10 source overlap with external AudioSet/ImageNet pretraining has not been audited'}
-    selection_path = REPORT / 'selection.json'
-    if selection_path.exists() and read_json(selection_path) != selection:
-        raise ValueError('Selection was already frozen; do not change candidates after test access')
-    write_json(selection_path, selection)
-    shutil.copy2(ROOT / winner['checkpoint'], MODELS / 'best_v2.pt')
-    write_json(MODELS / 'best_v2.json', selection)
-    for meta in trained:
-        evaluate_candidate(meta, feature_sets[meta['name']], df, device)
-    for name in cv_names:
-        oof = []
-        for fold in range(1, 6):
-            meta = next(r for r in trained if r['name'] == name) if fold == 5 else train_candidate(name, feature_sets[name], df, fold, device, mels, provenance[name])
-            oof.append(evaluate_candidate(meta, feature_sets[name], df, device))
-        predictions = pd.concat(oof, ignore_index=True)
-        if len(predictions) != 400 or not predictions.filename.is_unique or set(predictions.filename) != set(df.filename):
-            raise ValueError('Expected exactly one OOF prediction per original clip')
-        predictions.to_csv(REPORT / 'predictions' / f'{name}_oof.csv', index=False)
-    write_json(REPORT / 'run_status.json', {'trained_candidates': [r['name'] for r in trained], 'blockers': blockers,
-                                          'cv_candidates': cv_names, 'selected': selection['name'], 'training_and_evaluation_complete': True})
-    from .report import generate
-    generate()
+    frames=[]
+    for fold in range(1,6):
+        meta=fixed if fold==5 else train_candidate(features,df,fold,device,provenance)
+        frames.append(evaluate_candidate(meta,features,df,device))
+    combined=pd.concat(frames,ignore_index=True)
+    if len(combined)!=400 or not combined.filename.is_unique or set(combined.filename)!=set(df.filename):
+        raise ValueError('Expected one OOF prediction per original clip')
+    combined.to_csv(REPORT/'predictions/yamnet_transfer_oof.csv',index=False)
+    write_json(MODELS/'yamnet.json',{'name':MODEL_NAME,'checkpoint':fixed['checkpoint'],
+               'checkpoint_sha256':fixed['checkpoint_sha256'],'deployment_trained_all_data':False})
+    from . import report
+    report.REPORT=REPORT
+    report.generate(sync_results=False)
+    print(f'New YAMNet experiment saved in {output}; deployed checkpoint preserved',flush=True)
 
 
-if __name__ == '__main__':
+if __name__=='__main__':
     main()

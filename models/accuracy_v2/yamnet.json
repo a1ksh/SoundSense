@@ -1,0 +1,10 @@
+{
+  "name": "yamnet_transfer",
+  "checkpoint": "models/accuracy_v2/yamnet_transfer_fixed.pt",
+  "checkpoint_sha256": "56ee289dee49c4af93ce9da992913ce24391d65a186324ad4168f9d2e3b2df4a",
+  "rule": "single YAMNet model; epoch selected by fold-4 validation loss",
+  "validation_loss": 0.05248514339327812,
+  "validation_accuracy": 1.0,
+  "deployment_trained_all_data": false,
+  "historical_evaluation_caveat": "model originally chosen on fixed validation; fixed test previously known; not fully nested selection"
+}

@@ -1,0 +1,14 @@
+{
+  "correctness_table": [
+    [
+      348,
+      43
+    ],
+    [
+      6,
+      3
+    ]
+  ],
+  "mcnemar_exact_two_sided_p": 5.7277652842913085e-08,
+  "caveat": "Exploratory paired description. OOF heads have overlapping training sets; not an independent external replication."
+}

@@ -1,0 +1,15 @@
+{
+  "name": "efficientnet_b0_mel",
+  "checkpoint_sha256": "459338799b11e11d7c65bf337d80d80b654abc99f62dc5d4416c165766641bac",
+  "backbone_sha256": "51ebc58f8c40455d87b4433b68af635024787ba39cc3eff03e767c314c85a064",
+  "source": "colab_two_models/run/models/efficientnet_b0_mel_fixed.pt",
+  "best_epoch": 36,
+  "validation_loss": 0.3307037174701691,
+  "train_folds": [
+    1,
+    2,
+    3
+  ],
+  "validation_fold": 4,
+  "test_fold": 5
+}

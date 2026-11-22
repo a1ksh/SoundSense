@@ -1,0 +1,11 @@
+,dog,rooster,rain,sea_waves,crackling_fire,crying_baby,sneezing,clock_tick,helicopter,chainsaw
+dog,30,0,0,0,0,0,7,1,1,1
+rooster,1,38,0,0,0,1,0,0,0,0
+rain,0,0,36,0,2,0,0,0,2,0
+sea_waves,0,0,2,36,0,0,0,0,1,1
+crackling_fire,0,1,1,0,37,0,0,0,1,0
+crying_baby,1,2,0,0,0,36,0,1,0,0
+sneezing,3,1,0,0,0,0,36,0,0,0
+clock_tick,1,0,0,0,1,1,0,36,1,0
+helicopter,1,0,3,2,0,0,0,0,33,1
+chainsaw,0,0,0,0,1,1,0,0,2,36

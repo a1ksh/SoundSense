@@ -1,0 +1,98 @@
+{
+  "passed": true,
+  "saved_predictions": {
+    "passed": true,
+    "oof_count": 400,
+    "oof_correct": 391,
+    "train_only_scalers_verified": 5,
+    "folds": [
+      {
+        "fold": 1,
+        "count": 80,
+        "correct": 79,
+        "checkpoint_sha256": "85fef3b6dd77e88fab6bf47fa35cf5d27412689daaee9a3c2c21d57d0beeb9f1",
+        "max_probability_difference": 4.7389663693220285e-07
+      },
+      {
+        "fold": 2,
+        "count": 80,
+        "correct": 79,
+        "checkpoint_sha256": "c5ef727f5a09f70a8a3062e4ba506b6545d5cfe0c7488895862cb850bcf6179a",
+        "max_probability_difference": 4.420097351465202e-07
+      },
+      {
+        "fold": 3,
+        "count": 80,
+        "correct": 76,
+        "checkpoint_sha256": "4b6bbb659803b5acfd0dfb83b9c6eeb16c768d08b99c47572d2eb56e7cf7a82c",
+        "max_probability_difference": 2.4010177612776573e-07
+      },
+      {
+        "fold": 4,
+        "count": 80,
+        "correct": 79,
+        "checkpoint_sha256": "de906eae6665939b32cf459fc3194ab905afeea7b34346ed3939b3942c6bbd61",
+        "max_probability_difference": 3.585862732302658e-07
+      },
+      {
+        "fold": 5,
+        "count": 80,
+        "correct": 78,
+        "checkpoint_sha256": "56ee289dee49c4af93ce9da992913ce24391d65a186324ad4168f9d2e3b2df4a",
+        "max_probability_difference": 2.4181365965159074e-07
+      }
+    ]
+  },
+  "live": {
+    "passed": true,
+    "input": "1-100032-A-0.wav",
+    "split": "training fold 1",
+    "repeat_deterministic": true,
+    "training_app_probability_equivalence": true,
+    "worker_reused": true,
+    "worker_closed": true,
+    "startup_seconds": 31.24207259999821,
+    "warm_prediction_seconds": 5.223193999991054,
+    "mel_shape": [
+      64,
+      528
+    ],
+    "mel_source": "official YAMNet log-Mel output; natural logarithm",
+    "latency_note": "one training clip on this computer; not a benchmark"
+  },
+  "api": {
+    "passed": true,
+    "url": "http://127.0.0.1:7860/",
+    "models": {
+      "YAMNet": {
+        "passed": true,
+        "label": "Сәбидің жылауы",
+        "top3_matches_saved_predictions": true,
+        "waveform_and_mel_returned": true,
+        "preview_16k_five_seconds": true,
+        "output_count": 5,
+        "seconds": 2.455747399973916
+      },
+      "EfficientNet-B0": {
+        "passed": true,
+        "label": "Сәбидің жылауы",
+        "top3_matches_saved_predictions": true,
+        "waveform_and_mel_returned": true,
+        "preview_16k_five_seconds": true,
+        "output_count": 5,
+        "seconds": 2.0425800000084564
+      }
+    },
+    "model_selector_enabled": true,
+    "model_selector_removed": false,
+    "input_count": 2,
+    "output_count": 5,
+    "default_model": "YAMNet",
+    "single_audio_default_api_compatible": true,
+    "all_three_routes_ok": true,
+    "input_audio": "5-151085-A-20.wav",
+    "public_share": false,
+    "server_closed": true,
+    "worker_closed": true
+  }
+}

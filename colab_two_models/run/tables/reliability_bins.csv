@@ -1,0 +1,7 @@
+model,bin,count,mean_confidence,accuracy
+yamnet_transfer,2,2,0.567975575,1.0
+yamnet_transfer,3,1,0.647313,1.0
+yamnet_transfer,4,77,0.9827185864935065,0.974025974025974
+efficientnet_b0_mel,2,3,0.51681156,0.3333333333333333
+efficientnet_b0_mel,3,7,0.70083243,0.8571428571428571
+efficientnet_b0_mel,4,70,0.9832441975714286,0.9428571428571428

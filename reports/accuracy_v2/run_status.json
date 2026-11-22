@@ -1,14 +1,12 @@
 {
+  "model": "yamnet_transfer",
   "trained_candidates": [
-    "cnn_v2",
-    "efficientnet_b0_mel",
     "yamnet_transfer"
   ],
-  "blockers": {},
   "cv_candidates": [
-    "yamnet_transfer",
-    "efficientnet_b0_mel"
+    "yamnet_transfer"
   ],
   "selected": "yamnet_transfer",
-  "training_and_evaluation_complete": true
+  "training_and_evaluation_complete": true,
+  "migration_retrained": false
 }

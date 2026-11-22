@@ -1,0 +1,78 @@
+{
+  "passed": true,
+  "original_clips": 400,
+  "models": [
+    "yamnet_transfer",
+    "efficientnet_b0_mel"
+  ],
+  "folds_per_model": 5,
+  "head_checks": [
+    {
+      "model": "yamnet_transfer",
+      "fold": 1,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 2,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 3,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 4,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "yamnet_transfer",
+      "fold": 5,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 1,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 2,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 3,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 4,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    },
+    {
+      "model": "efficientnet_b0_mel",
+      "fold": 5,
+      "train_only_scaler": true,
+      "deterministic_head": true
+    }
+  ],
+  "figure_count": 58,
+  "result_plots_per_model": 16,
+  "all_figures_300_dpi": true,
+  "backbones_frozen": true,
+  "training_seed": 42,
+  "executed_in_colab": false,
+  "caveat": "Checks describe this runtime; consult environment.json for the execution platform."
+}

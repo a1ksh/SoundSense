@@ -1,35 +1,25 @@
+import inspect
 import numpy as np
-import pandas as pd
-import torch
-
-from soundsense.common import ROOT, read_json
-from soundsense.evaluate import load_checkpoint
+import pytest
+from soundsense.common import ROOT
 from soundsense.infer import Predictor
-from soundsense.preprocess import feature, standardize
+from experiments.accuracy_v2.core import manifest
 
 
-def test_checkpoint_inference_matches_training_transform():
-    df = pd.read_csv(ROOT / 'data/metadata/manifest.csv')
-    path = ROOT / 'data/raw' / df[df.split == 'train'].iloc[0].filename
-    predictor = Predictor()
-    result = predictor.predict(path)
-    stats = read_json(ROOT / 'artifacts/preprocessing_stats.json')
-    x = standardize(feature(path, stats['preprocessing']), stats)
-    model, metadata = load_checkpoint(ROOT / 'models/cnn_best.pt')
-    with torch.inference_mode():
-        expected = torch.softmax(model(torch.from_numpy(x[None, None])), 1)[0].numpy()
-    actual = np.array(list(result['probabilities'].values()))
-    np.testing.assert_allclose(actual, expected, rtol=1e-6, atol=1e-7)
-    assert abs(actual.sum() - 1) < 1e-5
-    assert len(result['top3']) == 3
-    assert metadata['statistics'] == stats
-
-
-def test_saved_predictions_match_metrics_and_are_fold_five_only():
-    from sklearn.metrics import accuracy_score
-    for name in ['mlp', 'cnn']:
-        p = pd.read_csv(ROOT / f'results/predictions/{name}_test.csv')
-        metrics = read_json(ROOT / f'results/metrics/{name}_metrics.json')
-        assert len(p) == 80 and (p.fold == 5).all()
-        assert accuracy_score(p.true_index, p.predicted_index) == metrics['accuracy']
-        assert len([c for c in p if c.startswith('prob_')]) == 10
+def test_real_yamnet_frontend_and_repeated_prediction():
+    df=manifest()
+    path=ROOT/'data/raw'/df[df.fold==1].iloc[0].filename
+    with Predictor() as predictor:
+        first=predictor.predict(path)
+        process=predictor.worker.process
+        second=predictor.predict(path)
+        assert first['model']=='yamnet_transfer'
+        assert first['waveform'].shape==(80000,)
+        assert first['mel'].shape[0]==64 and first['mel'].shape[1]>128
+        assert np.isfinite(first['mel']).all()
+        np.testing.assert_array_equal(first['mel'],second['mel'])
+        p=np.array(list(first['probabilities'].values()))
+        assert p.shape==(10,) and p.sum()==pytest.approx(1,abs=1e-5)
+        np.testing.assert_array_equal(p,list(second['probabilities'].values()))
+        assert len(first['top3'])==3 and predictor.worker.process is process
+    assert process.poll() is not None

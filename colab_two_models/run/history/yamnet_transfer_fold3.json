@@ -1,0 +1,14 @@
+{
+  "model": "yamnet_transfer",
+  "fold": 3,
+  "epochs": 74,
+  "best_epoch": 49,
+  "validation_loss": 0.06251716697588564,
+  "training_seconds": 9.105911599996034,
+  "head_parameters": 10250,
+  "checkpoint_bytes": 62229,
+  "checkpoint_sha256": "2b44f806ec56b4e080f8e959dc90424823dcae1fdea9726490cc567f16530cb7",
+  "history_sha256": "b1aee9d2f9e3828b299fadbdda614793eb216a11cbfd98543660e6c329cc3694",
+  "seed": 42,
+  "device": "cuda"
+}

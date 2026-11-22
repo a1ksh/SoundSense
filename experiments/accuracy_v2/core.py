@@ -1,22 +1,19 @@
-"""Shared split, model, transform and checkpoint contract for V2 and app."""
+"""YAMNet-only split, frozen feature cache and checkpoint contracts."""
 import os
+import importlib.metadata
 from pathlib import Path
-
 import numpy as np
 import pandas as pd
-import torch
-from torch import nn
-from torch.nn import functional as F
-
-from soundsense.common import ROOT, config, identity, read_json, sha256
-from soundsense.models import CNN
+from soundsense.common import ROOT, identity, read_json, code_identity, sha256
+from soundsense.models import TransferHead
+from soundsense.checkpoints import load_weights
 
 REPORT = ROOT / 'reports/accuracy_v2'
 MODELS = ROOT / 'models/accuracy_v2'
 CACHE = ROOT / 'data/accuracy_v2_cache'
 RECIPE_PATH = Path(__file__).with_name('config.json')
 YAMNET_URL = 'https://tfhub.dev/google/yamnet/1'
-
+MODEL_NAME = 'yamnet_transfer'
 
 def manifest():
     df = pd.read_csv(ROOT / 'data/metadata/manifest.csv', dtype={'src_file': str})
@@ -31,7 +28,7 @@ def manifest():
     mapping = read_json(ROOT / 'artifacts/class_mapping.json')
     label_index = {row['label']: row['index'] for row in mapping}
     if not (df.category.map(label_index) == df.class_index).all():
-        raise ValueError('Class order differs from baseline mapping')
+        raise ValueError('Class order differs from ESC-10 mapping')
     return df
 
 
@@ -50,83 +47,43 @@ def split_masks(df, test_fold=5):
     return train, val, test
 
 
-def efficientnet_input(mels):
-    """Identical per-clip transform for frozen extraction and app inference.
 
-    Fixed 80-dB relative log-Mel range mapped to [0,1], RGB repeat, bilinear
-    224x224 resize, ImageNet channel normalization. No data-fitted statistics.
-    """
-    x = torch.as_tensor(mels, dtype=torch.float32)
-    if x.ndim == 2:
-        x = x[None]
-    maximum = x.amax(dim=(-2, -1), keepdim=True)
-    x = ((x - maximum + 80) / 80).clamp(0, 1)
-    x = F.interpolate(x[:, None].repeat(1, 3, 1, 1), size=(224, 224), mode='bilinear', align_corners=False)
-    mean = x.new_tensor([.485, .456, .406])[None, :, None, None]
-    std = x.new_tensor([.229, .224, .225])[None, :, None, None]
-    return (x - mean) / std
-
-
-def efficientnet_backbone(pretrained=False):
-    try:
-        from torchvision.models import efficientnet_b0, EfficientNet_B0_Weights
-        net = efficientnet_b0(weights=EfficientNet_B0_Weights.DEFAULT if pretrained else None)
-    except (ImportError, OSError, RuntimeError) as exc:
-        raise RuntimeError('EfficientNet requires matching torchvision==0.22.1 and packaged pretrained weights. See experiments/accuracy_v2/README.md.') from exc
-    net.classifier = nn.Identity()
-    net.requires_grad_(False)
-    return net.eval()
-
-
-class TransferHead(nn.Module):
-    def __init__(self, dimension):
-        super().__init__()
-        self.net = nn.Sequential(nn.Dropout(.2), nn.Linear(dimension, 10))
-
-    def forward(self, x):
-        return self.net(x)
-
-
-def build_candidate(name, dimension=None):
-    if name == 'cnn_v2':
-        return CNN()
-    if name in ('efficientnet_b0_mel', 'yamnet_transfer') and dimension:
-        return TransferHead(dimension)
-    raise ValueError(f'Unsupported V2 model: {name}')
+def build_candidate(name=MODEL_NAME, dimension=1024):
+    if name != MODEL_NAME or dimension != 1024:
+        raise ValueError('Only YAMNet with 1024 features is supported')
+    return TransferHead(dimension)
 
 
 def load_candidate(path, device='cpu'):
-    payload = torch.load(path, map_location=device, weights_only=True)
+    payload = load_weights(path, device)
     if payload.get('schema') != 'accuracy_v2_1':
-        raise ValueError('Unsupported V2 checkpoint format')
-    labels = [r['label'] for r in payload['class_mapping']]
-    if len(labels) != 10 or len(set(labels)) != 10:
-        raise ValueError('V2 checkpoint must contain ten ordered labels')
-    model = build_candidate(payload['name'], payload.get('dimension')).to(device)
+        raise ValueError('Unsupported YAMNet checkpoint format')
+    model = build_candidate(payload.get('name'), payload.get('dimension')).to(device)
+    mapping = payload.get('class_mapping', [])
+    if mapping != read_json(ROOT / 'artifacts/class_mapping.json'):
+        raise ValueError('YAMNet checkpoint class order differs from ESC-10 mapping')
+    cfg = payload.get('preprocessing', {})
+    if cfg.get('sample_rate') != 16000 or cfg.get('duration_seconds') != 5:
+        raise ValueError('YAMNet requires 16 kHz five-second waveform preprocessing')
+    for key in ['mean', 'std']:
+        values = np.asarray(payload.get(key), dtype=np.float64)
+        if values.shape != (1024,) or not np.isfinite(values).all() or (key == 'std' and (values < 1e-6).any()):
+            raise ValueError(f'Invalid YAMNet train {key}')
     model.load_state_dict(payload['state_dict'], strict=True)
     return model.eval(), payload
 
 
-def raw_mels(df):
-    # Baseline cache is read, never rewritten; verify manifest ordering first.
-    cache = ROOT / 'data/cache/features.npz'
-    meta = ROOT / 'data/cache/features.json'
-    if cache.exists() and meta.exists() and sha256(cache) == read_json(meta)['cache_sha256']:
-        with np.load(cache, allow_pickle=False) as data:
-            values = data['features'].copy()
-        if values.shape == (400, 64, 128) and np.isfinite(values).all():
-            return values
-    from soundsense.preprocess import feature
-    cfg = config()['preprocessing']
-    return np.stack([feature(ROOT / 'data/raw' / f, cfg) for f in df.filename])
-
-
-def cache_key(df, name, extra=None):
-    return identity({'name': name, 'files': df[['filename', 'sha256']].to_dict('records'),
-                     'preprocessing': config()['preprocessing'], 'version': 1, 'extra': extra})
+def cache_key(df, name=MODEL_NAME, extra=None):
+    if name != MODEL_NAME:
+        raise ValueError('Only YAMNet embeddings are supported')
+    return identity({'name':name, 'files':df[['filename','sha256']].to_dict('records'),
+                     'waveform':{'sample_rate':16000,'duration_seconds':5,'mono':'mean','resample':'soxr_hq'},
+                     'implementation':code_identity(['preprocess.py']),
+                     'extractor_sha256':sha256(Path(__file__).with_name('extract_yamnet.py')),
+                     'packages':{p:importlib.metadata.version(p) for p in ['numpy','librosa','soundfile','soxr']},
+                     'version':2,'extra':extra})
 
 
 def cache_environment():
-    os.environ.setdefault('TORCH_HOME', str(CACHE / 'torch'))
     os.environ.setdefault('TFHUB_CACHE_DIR', str(CACHE / 'tfhub'))
     CACHE.mkdir(parents=True, exist_ok=True)

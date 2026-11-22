@@ -1,139 +1,98 @@
-"""V2 leakage, preprocessing, checkpoint and persisted evaluation regression."""
-from pathlib import Path
-
+"""YAMNet splits, checkpoint contracts and preserved evaluation regressions."""
 import numpy as np
 import pandas as pd
 import pytest
 import torch
-
 from soundsense.common import ROOT, read_json
-from experiments.accuracy_v2.core import (CACHE, MODELS, REPORT, efficientnet_input,
-                                         load_candidate, manifest, raw_mels, split_masks)
+from experiments.accuracy_v2.core import MODELS, REPORT, build_candidate, load_candidate, manifest, split_masks
 
 
-@pytest.mark.parametrize('fold', range(1, 6))
-def test_official_nested_partitions_and_source_disjointness(fold):
-    df = manifest()
-    train, val, test = split_masks(df, fold)
-    assert [int(x.sum()) for x in (train, val, test)] == [240, 80, 80]
-    assert set(df.loc[test, 'fold']) == {fold}
-    assert set(df.loc[val, 'fold']) == {fold - 1 or 5}
-    for left, right in ((train, val), (train, test), (val, test)):
-        assert not set(df.loc[left, 'src_file']) & set(df.loc[right, 'src_file'])
-        assert not np.any(left & right)
-    assert np.all(train | val | test)
+@pytest.mark.parametrize('fold',range(1,6))
+def test_official_partitions_and_source_disjointness(fold):
+    df=manifest()
+    train,val,test=split_masks(df,fold)
+    assert [int(x.sum()) for x in (train,val,test)]==[240,80,80]
+    assert set(df.loc[test,'fold'])=={fold}
+    assert set(df.loc[val,'fold'])=={fold-1 or 5}
+    for a,b in [(train,val),(train,test),(val,test)]:
+        assert not set(df.loc[a,'src_file']) & set(df.loc[b,'src_file'])
+        assert not np.any(a&b)
+    assert np.all(train|val|test)
 
 
-def test_imagenet_transform_is_clipwise_and_finite():
-    mels = torch.linspace(-90, 20, 2 * 64 * 128).reshape(2, 64, 128)
-    batched = efficientnet_input(mels)
-    assert batched.shape == (2, 3, 224, 224)
-    torch.testing.assert_close(batched[:1], efficientnet_input(mels[0]))
-    assert torch.isfinite(batched).all()
+def test_all_saved_heads_reproduce_400_oof_probabilities_and_train_scalers():
+    from experiments.accuracy_v2.verify import verify_predictions
+    result,_,_=verify_predictions()
+    assert result['oof_count']==400 and result['oof_correct']==391
+    assert result['train_only_scalers_verified']==5
 
 
-@pytest.mark.parametrize('name', ['cnn_v2', 'efficientnet_b0_mel', 'yamnet_transfer'])
-def test_checkpoint_label_order_output_and_training_only_scaling(name):
-    path = MODELS / f'{name}_fixed.pt'
-    if not path.exists():
-        pytest.skip(f'{name} was not trained; see run_status.json')
-    df = manifest()
-    train, _, _ = split_masks(df, 5)
-    model, payload = load_candidate(path)
-    assert payload['class_mapping'] == read_json(ROOT / 'artifacts/class_mapping.json')
-    assert payload['fit_count'] == 240 and payload['train_folds'] == [1, 2, 3]
-    assert payload['validation_fold'] == 4 and payload['test_fold'] == 5
-    if name == 'cnn_v2':
-        values = raw_mels(df)
-        mean, std = float(values[train].mean(dtype=np.float64)), float(values[train].std(dtype=np.float64))
-    else:
-        with np.load(CACHE / f'{name}_embeddings.npz', allow_pickle=False) as z:
-            values = z['embeddings']
-        mean = values[train].mean(axis=0, dtype=np.float64)
-        std = np.maximum(values[train].std(axis=0, dtype=np.float64), 1e-6)
-    np.testing.assert_allclose(payload['mean'], mean, rtol=1e-12, atol=1e-12)
-    np.testing.assert_allclose(payload['std'], std, rtol=1e-12, atol=1e-12)
-    x = ((values[train][:2] - mean) / std).astype(np.float32)
-    if name == 'cnn_v2':
-        x = x[:, None]
-    with torch.inference_mode():
-        first = model(torch.from_numpy(x)).softmax(1)
-        second = model(torch.from_numpy(x)).softmax(1)
-    assert first.shape == (2, 10)
-    torch.testing.assert_close(first.sum(1), torch.ones(2))
-    torch.testing.assert_close(first, second, rtol=0, atol=0)
+def test_fixed_and_oof_metrics_recompute_from_saved_scores():
+    from experiments.accuracy_v2.report import score_predictions
+    labels=[r['label'] for r in read_json(ROOT/'artifacts/class_mapping.json')]
+    for run,count,correct in [('fixed',80,78),('oof',400,391)]:
+        frame=pd.read_csv(REPORT/f'predictions/yamnet_transfer_{run}.csv')
+        actual=score_predictions(frame,labels,count)
+        saved=read_json(REPORT/f'metrics/yamnet_transfer_{run}.json')
+        assert actual['count']==count and actual['correct']==correct
+        for key in ['accuracy','macro_f1','macro_roc_auc_ovr','macro_average_precision']:
+            assert actual[key]==pytest.approx(saved[key],abs=1e-12)
 
 
-def test_all_oof_rows_are_original_clips_and_each_model_excludes_its_test_fold():
-    status = read_json(REPORT / 'run_status.json')
-    df = manifest()
-    for name in status['cv_candidates']:
-        frame = pd.read_csv(REPORT / f'predictions/{name}_oof.csv')
-        assert len(frame) == 400 and frame.filename.is_unique
-        merged = frame.merge(df, on='filename', suffixes=('_prediction', '_manifest'), validate='one_to_one')
-        assert len(merged) == 400
-        np.testing.assert_array_equal(merged.fold_prediction, merged.fold_manifest)
-        np.testing.assert_array_equal(merged.true_index, merged.class_index)
-        for fold in range(1, 6):
-            run_id = f'{name}_fixed' if fold == 5 else f'{name}_fold{fold}'
-            _, payload = load_candidate(MODELS / f'{run_id}.pt')
-            assert fold not in payload['train_folds']
-            assert payload['validation_fold'] not in payload['train_folds']
-            assert payload['test_fold'] == fold
-
-
-def test_frozen_selection_agrees_with_validation_ranking_and_best_checkpoint():
-    from soundsense.common import sha256
-    selection = read_json(REPORT / 'selection.json')
-    ranking = selection['validation_ranking']
-    assert selection['name'] == min(ranking, key=lambda r: r['validation_loss'])['name']
-    assert sha256(MODELS / 'best_v2.pt') == selection['checkpoint_sha256']
+@pytest.mark.parametrize('name',['mlp','cnn_v2','efficientnet_b0_mel'])
+def test_yamnet_experiment_rejects_other_architecture_checkpoints(name):
+    with pytest.raises(ValueError,match='Only YAMNet'):
+        build_candidate(name,1024)
 
 
 def test_missing_checkpoint_fails_clearly(tmp_path):
-    from experiments.accuracy_v2.inference import V2Predictor
-    with pytest.raises(RuntimeError, match='табылмады'):
-        V2Predictor(tmp_path / 'missing.pt')
+    from soundsense.infer import Predictor
+    with pytest.raises(RuntimeError,match='табылмады'):
+        Predictor(tmp_path/'missing.pt')
 
 
-def test_unsupported_checkpoint_does_not_predict(tmp_path):
-    path = tmp_path / 'unsupported.pt'
-    torch.save({'schema': 'unsupported'}, path)
-    with pytest.raises(ValueError, match='Unsupported V2'):
+def test_unsupported_checkpoint_is_rejected(tmp_path):
+    path=tmp_path/'bad.pt'
+    torch.save({'schema':'unsupported'},path)
+    with pytest.raises(ValueError,match='Unsupported YAMNet'):
         load_candidate(path)
 
 
-def test_waveform_augmentation_reads_training_clips_only(tmp_path, monkeypatch):
-    from experiments.accuracy_v2 import run
-    from experiments.accuracy_v2.core import RECIPE_PATH
-    df = manifest()
-    train, _, _ = split_masks(df, 5)
-    recipe = dict(read_json(RECIPE_PATH)['cnn_v2'], waveform_variants=1)
-    seen = []
-    def load_training(path, cfg):
-        seen.append(path.name)
-        return np.ones(80000, dtype=np.float32) * .1
-    monkeypatch.setattr(run, 'CACHE', tmp_path)
-    monkeypatch.setattr(run, 'load_audio', load_training)
-    monkeypatch.setattr(run, 'logmel', lambda y, cfg: np.zeros((64, 128), dtype=np.float32))
-    values = run.augmented_train_mels(df, train, recipe, np.zeros((400, 64, 128), dtype=np.float32))
-    assert values.shape == (2, 240, 64, 128)
-    assert len(seen) == 240 and set(seen) == set(df.loc[train, 'filename'])
+@pytest.mark.parametrize('change',['class_order','mean_shape','std_zero','mean_nan','dimension','sample_rate'])
+def test_malformed_checkpoint_cannot_predict(change,tmp_path):
+    from soundsense.checkpoints import load_weights
+    payload=load_weights(MODELS/'yamnet_transfer_fixed.pt')
+    if change=='class_order':
+        payload['class_mapping']=payload['class_mapping'][::-1]
+    elif change=='mean_shape':
+        payload['mean']=[0.]
+    elif change=='std_zero':
+        payload['std'][0]=0
+    elif change=='mean_nan':
+        payload['mean'][0]=float('nan')
+    elif change=='dimension':
+        payload['dimension']=1280
+    else:
+        payload['preprocessing']['sample_rate']=44100
+    path=tmp_path/'bad.pt'
+    torch.save(payload,path)
+    with pytest.raises(ValueError):
+        load_candidate(path)
 
 
-def test_missing_yamnet_runtime_has_clear_error(monkeypatch, tmp_path):
-    from experiments.accuracy_v2.inference import V2Predictor
-    path = MODELS / 'yamnet_transfer_fixed.pt'
-    if not path.exists():
-        pytest.skip('YAMNet did not train; see run_status.json')
-    monkeypatch.setenv('SOUNDSENSE_YAMNET_PYTHON', str(tmp_path / 'missing_python.exe'))
-    with pytest.raises(RuntimeError, match='SOUNDSENSE_YAMNET_PYTHON'):
-        V2Predictor(path)
+def test_missing_tensorflow_runtime_is_explicit(monkeypatch,tmp_path):
+    from soundsense.infer import Predictor
+    monkeypatch.setenv('SOUNDSENSE_YAMNET_PYTHON',str(tmp_path/'missing.exe'))
+    with pytest.raises(RuntimeError,match='SOUNDSENSE_YAMNET_PYTHON'):
+        Predictor()
 
 
-def test_missing_efficientnet_weights_has_clear_error(monkeypatch, tmp_path):
-    from experiments.accuracy_v2 import inference
-    path = MODELS / 'efficientnet_b0_mel_fixed.pt'
-    monkeypatch.setattr(inference, 'MODELS', tmp_path)
-    with pytest.raises(RuntimeError, match='backbone'):
-        inference.V2Predictor(path)
+def test_yamnet_experiment_weights_and_result_plots_are_preserved():
+    checkpoints=list(MODELS.glob('*.pt'))
+    assert len(checkpoints)==5 and all(p.name.startswith('yamnet_transfer_') for p in checkpoints)
+    plots=list((REPORT/'plots').glob('*.png'))
+    assert len(plots)==16 and all(p.name.startswith('yamnet_transfer_') for p in plots)
+    all_plots=list((ROOT/'results/figures').glob('*.png'))
+    assert len(all_plots)==18
+    assert all(p.name.startswith('yamnet_transfer_') or p.name in ['class_distribution.png','audio_waveform_examples.png'] for p in all_plots)
+    assert set(read_json(REPORT/'cross_validation_summary.json'))=={'yamnet_transfer'}

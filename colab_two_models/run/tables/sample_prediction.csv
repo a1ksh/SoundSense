@@ -1,0 +1,21 @@
+model,rank,label,kazakh_label,softmax
+YAMNet transfer,1,crying_baby,Сәбидің жылауы,0.9999567270278931
+YAMNet transfer,2,sneezing,Түшкіру,1.863462784967851e-05
+YAMNet transfer,3,rooster,Әтеш,1.1718956557160709e-05
+YAMNet transfer,4,sea_waves,Теңіз толқындары,5.583216989180073e-06
+YAMNet transfer,5,chainsaw,Моторлы ара,5.333352874004049e-06
+YAMNet transfer,6,clock_tick,Сағат тықылы,1.7861104879557388e-06
+YAMNet transfer,7,helicopter,Тікұшақ,1.373325062559161e-07
+YAMNet transfer,8,rain,Жаңбыр,2.918845964927641e-08
+YAMNet transfer,9,dog,Иттің үруі,2.6494808125221425e-08
+YAMNet transfer,10,crackling_fire,Оттың шытырлауы,1.020403983531537e-09
+EfficientNet-B0 transfer,1,crying_baby,Сәбидің жылауы,0.9997451901435852
+EfficientNet-B0 transfer,2,dog,Иттің үруі,0.00015565312060061842
+EfficientNet-B0 transfer,3,rooster,Әтеш,3.866303086397238e-05
+EfficientNet-B0 transfer,4,clock_tick,Сағат тықылы,3.6887882743030787e-05
+EfficientNet-B0 transfer,5,chainsaw,Моторлы ара,1.065996093529975e-05
+EfficientNet-B0 transfer,6,sneezing,Түшкіру,6.9616858127119485e-06
+EfficientNet-B0 transfer,7,crackling_fire,Оттың шытырлауы,4.786791578226257e-06
+EfficientNet-B0 transfer,8,sea_waves,Теңіз толқындары,8.739020245229767e-07
+EfficientNet-B0 transfer,9,helicopter,Тікұшақ,2.3386596126329096e-07
+EfficientNet-B0 transfer,10,rain,Жаңбыр,2.1178289344447876e-08

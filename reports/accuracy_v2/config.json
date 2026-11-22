@@ -1,8 +1,17 @@
 {
   "seed": 42,
-  "selection": "minimum validation cross entropy; never select by test accuracy",
+  "selection": "minimum validation cross entropy; never select epoch by test accuracy",
   "cv_recipe": "outer test K, validation K-1 wrapping 1 to 5, remaining three train",
-  "cnn_v2": {"epochs": 60, "patience": 12, "batch_size": 16, "learning_rate": 0.001, "weight_decay": 0.0001, "waveform_variants": 2, "shift_seconds": 0.35, "gain_db": 4, "noise_snr_db": [25, 35], "frequency_mask": 6, "time_mask": 12},
-  "efficientnet_b0_mel": {"epochs": 120, "patience": 20, "batch_size": 16, "learning_rate": 0.002, "weight_decay": 0.001, "backbone": "torchvision EfficientNet_B0_Weights.IMAGENET1K_V1", "frozen": true, "input_size": 224},
-  "yamnet_transfer": {"epochs": 160, "patience": 25, "batch_size": 16, "learning_rate": 0.001, "weight_decay": 0.001, "backbone": "https://tfhub.dev/google/yamnet/1", "pooling": "mean", "input_samples": 80000, "sample_rate": 16000, "frozen": true}
+  "yamnet_transfer": {
+    "epochs": 160,
+    "patience": 25,
+    "batch_size": 16,
+    "learning_rate": 0.001,
+    "weight_decay": 0.001,
+    "backbone": "https://tfhub.dev/google/yamnet/1",
+    "pooling": "mean",
+    "input_samples": 80000,
+    "sample_rate": 16000,
+    "frozen": true
+  }
 }

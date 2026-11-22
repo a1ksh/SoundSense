@@ -5,3 +5,14 @@ models/accuracy_v2/*.pt -text
 reports/accuracy_v2/**/*.pt -text
 # The source recipe's recorded SHA-256 is based on LF bytes.
 experiments/accuracy_v2/*.json text eol=lf
+# Preserve published model and dataset provenance hashes across platforms.
+data/metadata/** -text
+models/** -text
+colab_two_models/assets/** -text
+colab_two_models/run/** -text
+colab_two_models/package_manifest.json -text
+colab_two_models/*.ipynb -text
+# Exported figures retain their original bytes and do not need text diffs.
+colab_two_models/run/figures/** -diff linguist-generated=true
+# Preserve the third-party notice verbatim, including its original spacing.
+models/transfer/TORCHVISION_LICENSE -whitespace

@@ -1,4 +1,4 @@
-# Actual executed Windows/Python environment. Install official CUDA wheel first.
+# Verified patched Windows/Python environment. Install the official CUDA wheel first.
 aiofiles==24.1.0
 annotated-doc==0.0.5
 annotated-types==0.8.0
@@ -80,7 +80,7 @@ starlette==0.52.1
 sympy==1.14.0
 threadpoolctl==3.7.0
 tomlkit==0.13.3
-torch==2.7.1+cu126
+torch==2.10.0+cu126
 tqdm==4.67.1
 typer==0.27.3
 typing-inspection==0.4.4
@@ -89,3 +89,5 @@ tzdata==2026.5
 urllib3==2.8.0
 uvicorn==0.54.0
 websockets==15.0.1
+
+torchvision==0.25.0+cu126

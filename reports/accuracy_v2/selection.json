@@ -1,29 +1,10 @@
 {
   "name": "yamnet_transfer",
-  "checkpoint": "models\\accuracy_v2\\yamnet_transfer_fixed.pt",
+  "checkpoint": "models/accuracy_v2/yamnet_transfer_fixed.pt",
   "checkpoint_sha256": "56ee289dee49c4af93ce9da992913ce24391d65a186324ad4168f9d2e3b2df4a",
-  "rule": "minimum fixed-split fold-4 validation loss, frozen before new fold-5 evaluation and CV",
-  "validation_ranking": [
-    {
-      "name": "yamnet_transfer",
-      "validation_loss": 0.05248514339327812,
-      "validation_accuracy": 1.0
-    },
-    {
-      "name": "efficientnet_b0_mel",
-      "validation_loss": 0.33070371448993685,
-      "validation_accuracy": 0.85
-    },
-    {
-      "name": "cnn_v2",
-      "validation_loss": 0.5248843371868134,
-      "validation_accuracy": 0.85
-    }
-  ],
-  "cv_candidates_frozen_before_outer_evaluation": [
-    "yamnet_transfer",
-    "efficientnet_b0_mel"
-  ],
+  "rule": "single YAMNet model; epoch selected by fold-4 validation loss",
+  "validation_loss": 0.05248514339327812,
+  "validation_accuracy": 1.0,
   "deployment_trained_all_data": false,
-  "caveat": "ESC-10 source overlap with external AudioSet/ImageNet pretraining has not been audited"
+  "historical_evaluation_caveat": "model originally chosen on fixed validation; fixed test previously known; not fully nested selection"
 }

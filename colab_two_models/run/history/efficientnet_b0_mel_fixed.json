@@ -1,0 +1,14 @@
+{
+  "model": "efficientnet_b0_mel",
+  "fold": 5,
+  "epochs": 56,
+  "best_epoch": 36,
+  "validation_loss": 0.3307037174701691,
+  "training_seconds": 8.813802999968175,
+  "head_parameters": 12810,
+  "checkpoint_bytes": 77173,
+  "checkpoint_sha256": "459338799b11e11d7c65bf337d80d80b654abc99f62dc5d4416c165766641bac",
+  "history_sha256": "fcc9b3b2c2d320a76f15fc4955b3763b5df08ee5b85db65cab48860360f440ef",
+  "seed": 42,
+  "device": "cuda"
+}

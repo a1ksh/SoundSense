@@ -51,10 +51,11 @@ def test_lossless_format_preserves_features_and_checkpoint_prediction(audio_file
     original, files = audio_files
     cfg = config()['preprocessing']
     np.testing.assert_array_equal(load_uploaded_audio(files['.flac'], cfg), load_audio(original, cfg))
-    predictor = Predictor(ROOT / 'models/cnn_best.pt')
-    expected = predictor.predict(original)['probabilities']
-    actual = predictor.predict(files['.flac'])['probabilities']
-    np.testing.assert_allclose(list(actual.values()), list(expected.values()), rtol=1e-6, atol=1e-7)
+    with Predictor() as predictor:
+        expected = predictor.predict(original)['probabilities']
+        actual = predictor.predict(files['.flac'])['probabilities']
+        np.testing.assert_allclose(list(actual.values()), list(expected.values()), rtol=1e-6, atol=1e-7)
+
 
 
 def test_uppercase_extension_and_unicode_filename(audio_files):

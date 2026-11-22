@@ -1,0 +1,18 @@
+{
+  "commit": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+  "count": 400,
+  "classes": [
+    "dog",
+    "rooster",
+    "rain",
+    "sea_waves",
+    "crackling_fire",
+    "crying_baby",
+    "sneezing",
+    "clock_tick",
+    "helicopter",
+    "chainsaw"
+  ],
+  "license": "ESC-10 CC BY 3.0",
+  "dataset_identity": "d8886cbb42adf468b4858f7cf2bc130dbb573c5cb566ff6329333755b812f75b"
+}

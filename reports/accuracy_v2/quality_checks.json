@@ -1,9 +1,22 @@
 {
-  "pytest_passed": 48,
+  "passed": true,
+  "model": "yamnet_transfer",
+  "pytest_passed": 69,
   "pytest_skipped": 0,
   "pytest_exit_code": 0,
-  "baseline_checkpoint_and_history_hashes_preserved": true,
+  "checkpoint_and_history_hashes_preserved": true,
+  "all_saved_predictions_preserved": true,
+  "retrained": false,
+  "plot_count": 16,
+  "dataset_plot_count": 2,
   "all_plot_dpi_verified": true,
-  "plot_count": 52,
-  "inference_api_verified": true
+  "two_model_api_verified": true,
+  "app_models": [
+    "YAMNet",
+    "EfficientNet-B0"
+  ],
+  "fixed_accuracy": 0.975,
+  "fixed_correct": 78,
+  "oof_accuracy": 0.9775,
+  "oof_correct": 391
 }

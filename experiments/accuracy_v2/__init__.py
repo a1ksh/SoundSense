@@ -1,1 +1,1 @@
-"""Accuracy V2: original-fold experiments without baseline modification."""
+"""YAMNet transfer learning and official-fold ESC-10 evaluation."""

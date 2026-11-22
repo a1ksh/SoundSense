@@ -1,22 +1,35 @@
 {
   "passed": true,
-  "transport": "local HTTP Gradio API",
+  "url": "http://127.0.0.1:7860/",
   "models": {
-    "CNN v1 (baseline)": {
+    "YAMNet": {
       "passed": true,
-      "kazakh_label": "Түшкіру",
-      "output_count": 5
+      "label": "Сәбидің жылауы",
+      "top3_matches_saved_predictions": true,
+      "waveform_and_mel_returned": true,
+      "preview_16k_five_seconds": true,
+      "output_count": 5,
+      "seconds": 2.455747399973916
     },
-    "Best V2": {
+    "EfficientNet-B0": {
       "passed": true,
-      "kazakh_label": "Иттің үруі",
-      "output_count": 5
-    },
-    "default_selector": {
-      "passed": true,
-      "kazakh_label": "Иттің үруі"
+      "label": "Сәбидің жылауы",
+      "top3_matches_saved_predictions": true,
+      "waveform_and_mel_returned": true,
+      "preview_16k_five_seconds": true,
+      "output_count": 5,
+      "seconds": 2.0425800000084564
     }
   },
+  "model_selector_enabled": true,
+  "model_selector_removed": false,
+  "input_count": 2,
+  "output_count": 5,
+  "default_model": "YAMNet",
+  "single_audio_default_api_compatible": true,
+  "all_three_routes_ok": true,
+  "input_audio": "5-151085-A-20.wav",
+  "public_share": false,
   "server_closed": true,
-  "public_share": false
+  "worker_closed": true
 }

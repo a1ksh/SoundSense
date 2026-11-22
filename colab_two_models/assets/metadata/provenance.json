@@ -1,0 +1,17 @@
+{
+  "repository": "karolpiczak/ESC-50",
+  "commit": "33c8ce9eb2cf0b1c2f8bcf322eb349b6be34dbb6",
+  "resolved_utc": "2026-10-27T15:12:51.180702+00:00",
+  "dataset": "ESC-10 subset of ESC-50",
+  "count": 400,
+  "license": "CC BY 3.0 (ESC-10 subset); see original LICENSE for individual attributions",
+  "metadata_sha256": "ca660da60191a97de289983a05821c9382d852a38a2ba8428980816b68cf6246",
+  "license_sha256": "f6aec3a3283a2efdcbb1feff334adad7ab17c097bdec0cbb4eebdb9e16886074",
+  "citation": "Karol J. Piczak (2015). ESC: Dataset for Environmental Sound Classification. ACM Multimedia, 1015–1018. DOI:10.1145/2733373.2806390",
+  "split_counts": {
+    "test": 80,
+    "train": 240,
+    "validation": 80
+  },
+  "source_overlap": false
+}

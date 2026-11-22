@@ -1,0 +1,338 @@
+{
+  "yamnet_transfer": {
+    "fixed": {
+      "count": 80,
+      "correct": 78,
+      "accuracy": 0.975,
+      "macro_f1": 0.9739495798319329,
+      "macro_roc_auc": 0.9987847222222224,
+      "macro_ap": 0.9924145299145298,
+      "classification_report": {
+        "dog": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1-score": 0.8571428571428571,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.975,
+        "macro avg": {
+          "precision": 0.9777777777777779,
+          "recall": 0.975,
+          "f1-score": 0.9739495798319329,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9777777777777779,
+          "recall": 0.975,
+          "f1-score": 0.9739495798319329,
+          "support": 80.0
+        }
+      }
+    },
+    "oof": {
+      "count": 400,
+      "correct": 391,
+      "accuracy": 0.9775,
+      "macro_f1": 0.9774742973899961,
+      "macro_roc_auc": 0.9983541666666668,
+      "macro_ap": 0.9920574665569388,
+      "classification_report": {
+        "dog": {
+          "precision": 0.9302325581395349,
+          "recall": 1.0,
+          "f1-score": 0.963855421686747,
+          "support": 40.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9743589743589743,
+          "support": 40.0
+        },
+        "rain": {
+          "precision": 0.975,
+          "recall": 0.975,
+          "f1-score": 0.975,
+          "support": 40.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 0.975,
+          "f1-score": 0.9873417721518988,
+          "support": 40.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 40.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "sneezing": {
+          "precision": 0.9302325581395349,
+          "recall": 1.0,
+          "f1-score": 0.963855421686747,
+          "support": 40.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "helicopter": {
+          "precision": 0.9512195121951219,
+          "recall": 0.975,
+          "f1-score": 0.9629629629629629,
+          "support": 40.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "accuracy": 0.9775,
+        "macro avg": {
+          "precision": 0.9786684628474192,
+          "recall": 0.9775,
+          "f1-score": 0.9774742973899961,
+          "support": 400.0
+        },
+        "weighted avg": {
+          "precision": 0.9786684628474193,
+          "recall": 0.9775,
+          "f1-score": 0.9774742973899962,
+          "support": 400.0
+        }
+      }
+    }
+  },
+  "efficientnet_b0_mel": {
+    "fixed": {
+      "count": 80,
+      "correct": 73,
+      "accuracy": 0.9125,
+      "macro_f1": 0.9114234114698512,
+      "macro_roc_auc": 0.9921875,
+      "macro_ap": 0.9544282106782106,
+      "classification_report": {
+        "dog": {
+          "precision": 0.75,
+          "recall": 0.75,
+          "f1-score": 0.75,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 0.8333333333333334,
+          "recall": 0.625,
+          "f1-score": 0.7142857142857143,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 0.7272727272727273,
+          "recall": 1.0,
+          "f1-score": 0.8421052631578947,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "accuracy": 0.9125,
+        "macro avg": {
+          "precision": 0.919949494949495,
+          "recall": 0.9125,
+          "f1-score": 0.9114234114698512,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.919949494949495,
+          "recall": 0.9125,
+          "f1-score": 0.9114234114698512,
+          "support": 80.0
+        }
+      }
+    },
+    "oof": {
+      "count": 400,
+      "correct": 354,
+      "accuracy": 0.885,
+      "macro_f1": 0.8848902425528162,
+      "macro_roc_auc": 0.9915416666666668,
+      "macro_ap": 0.944528966426488,
+      "classification_report": {
+        "dog": {
+          "precision": 0.8108108108108109,
+          "recall": 0.75,
+          "f1-score": 0.7792207792207793,
+          "support": 40.0
+        },
+        "rooster": {
+          "precision": 0.9047619047619048,
+          "recall": 0.95,
+          "f1-score": 0.926829268292683,
+          "support": 40.0
+        },
+        "rain": {
+          "precision": 0.8571428571428571,
+          "recall": 0.9,
+          "f1-score": 0.8780487804878049,
+          "support": 40.0
+        },
+        "sea_waves": {
+          "precision": 0.9473684210526315,
+          "recall": 0.9,
+          "f1-score": 0.9230769230769231,
+          "support": 40.0
+        },
+        "crackling_fire": {
+          "precision": 0.9024390243902439,
+          "recall": 0.925,
+          "f1-score": 0.9135802469135802,
+          "support": 40.0
+        },
+        "crying_baby": {
+          "precision": 0.9230769230769231,
+          "recall": 0.9,
+          "f1-score": 0.9113924050632911,
+          "support": 40.0
+        },
+        "sneezing": {
+          "precision": 0.8372093023255814,
+          "recall": 0.9,
+          "f1-score": 0.8674698795180723,
+          "support": 40.0
+        },
+        "clock_tick": {
+          "precision": 0.9473684210526315,
+          "recall": 0.9,
+          "f1-score": 0.9230769230769231,
+          "support": 40.0
+        },
+        "helicopter": {
+          "precision": 0.8048780487804879,
+          "recall": 0.825,
+          "f1-score": 0.8148148148148148,
+          "support": 40.0
+        },
+        "chainsaw": {
+          "precision": 0.9230769230769231,
+          "recall": 0.9,
+          "f1-score": 0.9113924050632911,
+          "support": 40.0
+        },
+        "accuracy": 0.885,
+        "macro avg": {
+          "precision": 0.8858132636470994,
+          "recall": 0.885,
+          "f1-score": 0.8848902425528162,
+          "support": 400.0
+        },
+        "weighted avg": {
+          "precision": 0.8858132636470993,
+          "recall": 0.885,
+          "f1-score": 0.8848902425528163,
+          "support": 400.0
+        }
+      }
+    }
+  }
+}

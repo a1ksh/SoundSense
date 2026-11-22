@@ -1,180 +1,559 @@
 {
-  "study_design": "single-seed, one held-out original fold; no five-fold replicated study",
-  "seed": 42,
-  "test_fold": 5,
-  "test_count": 80,
-  "models": {
-    "mlp": {
-      "training": {
-        "model": "mlp",
-        "signature": "eb4c1ed45391692138e486aeb397aa538606eb64705e5a3dffaa8da336216edf",
-        "epochs_completed": 19,
-        "best_epoch": 12,
-        "best_validation_loss": 1.1863320469856262,
-        "training_seconds": 6.545562100014649,
-        "batch_size": 16,
-        "parameter_count": 1057610,
-        "device": "cuda",
-        "device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
-        "checkpoint_sha256": "c30e0a28616838706b561565a704e4271d86126fef29b9d46ad588aec26d30b8",
-        "history_sha256": "1949687adf5679d587cc956cae8498507f4d0c383e3c2dd7bf3f503f52cd4acc",
-        "seed": 42,
-        "complete": true,
-        "torch_version": "2.7.1+cu126"
+  "model": "yamnet_transfer",
+  "metrics": {
+    "yamnet_transfer_fixed": {
+      "count": 80,
+      "correct": 78,
+      "accuracy": 0.975,
+      "macro_f1": 0.9739495798319329,
+      "macro_roc_auc_ovr": 0.9987847222222224,
+      "macro_average_precision": 0.9924145299145298,
+      "classification_report": {
+        "dog": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1-score": 0.8571428571428571,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.975,
+        "macro avg": {
+          "precision": 0.9777777777777779,
+          "recall": 0.975,
+          "f1-score": 0.9739495798319329,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9777777777777779,
+          "recall": 0.975,
+          "f1-score": 0.9739495798319329,
+          "support": 80.0
+        }
       },
-      "metrics": {
-        "accuracy": 0.6,
-        "balanced_accuracy": 0.6,
-        "macro_precision": 0.6341883116883118,
-        "macro_recall": 0.6,
-        "macro_f1": 0.5775787516576991,
-        "weighted_precision": 0.6341883116883118,
-        "weighted_recall": 0.6,
-        "weighted_f1": 0.5775787516576991,
-        "macro_roc_auc_ovr": 0.9350694444444445,
-        "macro_average_precision": 0.6941899292872591,
-        "per_class_ranking": [
-          {
-            "class": "dog",
-            "roc_auc": 0.96875,
-            "average_precision": 0.8119318181818183
-          },
-          {
-            "class": "rooster",
-            "roc_auc": 1.0,
-            "average_precision": 1.0
-          },
-          {
-            "class": "rain",
-            "roc_auc": 0.9479166666666667,
-            "average_precision": 0.6490311771561771
-          },
-          {
-            "class": "sea_waves",
-            "roc_auc": 0.9444444444444444,
-            "average_precision": 0.7839692982456141
-          },
-          {
-            "class": "crackling_fire",
-            "roc_auc": 0.8854166666666666,
-            "average_precision": 0.6870993589743589
-          },
-          {
-            "class": "crying_baby",
-            "roc_auc": 0.8767361111111112,
-            "average_precision": 0.5001842359137251
-          },
-          {
-            "class": "sneezing",
-            "roc_auc": 0.9149305555555556,
-            "average_precision": 0.4471478174603174
-          },
-          {
-            "class": "clock_tick",
-            "roc_auc": 0.8958333333333333,
-            "average_precision": 0.5426943170993094
-          },
-          {
-            "class": "helicopter",
-            "roc_auc": 0.9722222222222223,
-            "average_precision": 0.8659722222222221
-          },
-          {
-            "class": "chainsaw",
-            "roc_auc": 0.9444444444444444,
-            "average_precision": 0.6538690476190476
-          }
-        ],
-        "test_count": 80,
-        "zero_division_policy": "precision/recall/F1=0 when undefined; all ten classes have eight test positives",
-        "ap_definition": "non-interpolated average precision, not trapezoidal PR-AUC"
-      }
+      "predictions_sha256": "d9346656130f969c629da1fdc2d537b0673a9f5fff6681e5adef7ef3755d94ad"
     },
-    "cnn": {
-      "training": {
-        "model": "cnn",
-        "signature": "5f0615089f4090ccabfd8e43b3c89f3a4eda6783d888a19bc7e536644f40a458",
-        "epochs_completed": 35,
-        "best_epoch": 34,
-        "best_validation_loss": 0.5784901916980744,
-        "training_seconds": 13.031546499987599,
-        "batch_size": 16,
-        "parameter_count": 24058,
-        "device": "cuda",
-        "device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
-        "checkpoint_sha256": "fd1fa681a2de2c1fbbec910a9a51abea3a58956e68dc98029afefab50f87b575",
-        "history_sha256": "8fa9c3e49bdadd8fab39e1078bc21af8283fc1f62c178af462a87c10907310e7",
-        "seed": 42,
-        "complete": true,
-        "torch_version": "2.7.1+cu126"
+    "yamnet_transfer_fold1": {
+      "count": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "macro_f1": 0.987450980392157,
+      "macro_roc_auc_ovr": 1.0,
+      "macro_average_precision": 1.0,
+      "classification_report": {
+        "dog": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.9875,
+        "macro avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        }
       },
-      "metrics": {
-        "accuracy": 0.8375,
-        "balanced_accuracy": 0.8375,
-        "macro_precision": 0.8494444444444446,
-        "macro_recall": 0.8375,
-        "macro_f1": 0.8349856352797529,
-        "weighted_precision": 0.8494444444444446,
-        "weighted_recall": 0.8375,
-        "weighted_f1": 0.8349856352797529,
-        "macro_roc_auc_ovr": 0.9845486111111112,
-        "macro_average_precision": 0.9295821886446886,
-        "per_class_ranking": [
-          {
-            "class": "dog",
-            "roc_auc": 0.951388888888889,
-            "average_precision": 0.7163690476190476
-          },
-          {
-            "class": "rooster",
-            "roc_auc": 1.0,
-            "average_precision": 1.0
-          },
-          {
-            "class": "rain",
-            "roc_auc": 0.9965277777777778,
-            "average_precision": 0.975
-          },
-          {
-            "class": "sea_waves",
-            "roc_auc": 0.9913194444444444,
-            "average_precision": 0.9519230769230769
-          },
-          {
-            "class": "crackling_fire",
-            "roc_auc": 0.9305555555555556,
-            "average_precision": 0.8333333333333334
-          },
-          {
-            "class": "crying_baby",
-            "roc_auc": 1.0,
-            "average_precision": 1.0
-          },
-          {
-            "class": "sneezing",
-            "roc_auc": 0.984375,
-            "average_precision": 0.8921130952380952
-          },
-          {
-            "class": "clock_tick",
-            "roc_auc": 0.9965277777777778,
-            "average_precision": 0.9704861111111112
-          },
-          {
-            "class": "helicopter",
-            "roc_auc": 0.9965277777777778,
-            "average_precision": 0.9704861111111112
-          },
-          {
-            "class": "chainsaw",
-            "roc_auc": 0.998263888888889,
-            "average_precision": 0.9861111111111112
-          }
-        ],
-        "test_count": 80,
-        "zero_division_policy": "precision/recall/F1=0 when undefined; all ten classes have eight test positives",
-        "ap_definition": "non-interpolated average precision, not trapezoidal PR-AUC"
-      }
+      "predictions_sha256": "91b71c073adc81ebd16a2ced2d83063698d0b5df09739c64774b039400073d85"
+    },
+    "yamnet_transfer_fold2": {
+      "count": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "macro_f1": 0.987450980392157,
+      "macro_roc_auc_ovr": 0.9996527777777778,
+      "macro_average_precision": 0.9972222222222221,
+      "classification_report": {
+        "dog": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.9875,
+        "macro avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        }
+      },
+      "predictions_sha256": "38b804780e81928bfa28a9f81ee6456379f3c80cd3321bd9f2adbf4c21f99aa9"
+    },
+    "yamnet_transfer_fold3": {
+      "count": 80,
+      "correct": 76,
+      "accuracy": 0.95,
+      "macro_f1": 0.9495051353874884,
+      "macro_roc_auc_ovr": 0.9946180555555555,
+      "macro_average_precision": 0.9800234487734487,
+      "classification_report": {
+        "dog": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.75,
+          "f1-score": 0.8571428571428571,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 0.8,
+          "recall": 1.0,
+          "f1-score": 0.8888888888888888,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.95,
+        "macro avg": {
+          "precision": 0.9577777777777777,
+          "recall": 0.95,
+          "f1-score": 0.9495051353874884,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9577777777777777,
+          "recall": 0.95,
+          "f1-score": 0.9495051353874884,
+          "support": 80.0
+        }
+      },
+      "predictions_sha256": "78490ace7bf8e95a2cb66669832c66b140d663d7fe73ee326c7788b3b108856c"
+    },
+    "yamnet_transfer_fold4": {
+      "count": 80,
+      "correct": 79,
+      "accuracy": 0.9875,
+      "macro_f1": 0.987450980392157,
+      "macro_roc_auc_ovr": 0.9991319444444444,
+      "macro_average_precision": 0.9951923076923077,
+      "classification_report": {
+        "dog": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "rain": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "sneezing": {
+          "precision": 0.8888888888888888,
+          "recall": 1.0,
+          "f1-score": 0.9411764705882353,
+          "support": 8.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "helicopter": {
+          "precision": 1.0,
+          "recall": 0.875,
+          "f1-score": 0.9333333333333333,
+          "support": 8.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 8.0
+        },
+        "accuracy": 0.9875,
+        "macro avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        },
+        "weighted avg": {
+          "precision": 0.9888888888888889,
+          "recall": 0.9875,
+          "f1-score": 0.987450980392157,
+          "support": 80.0
+        }
+      },
+      "predictions_sha256": "9bc86ea216f72ce43184d862ba11affe88d028382ed488286f900932406dfe67"
+    },
+    "yamnet_transfer_oof": {
+      "count": 400,
+      "correct": 391,
+      "accuracy": 0.9775,
+      "macro_f1": 0.9774742973899961,
+      "macro_roc_auc_ovr": 0.9983541666666668,
+      "macro_average_precision": 0.9920574665569388,
+      "classification_report": {
+        "dog": {
+          "precision": 0.9302325581395349,
+          "recall": 1.0,
+          "f1-score": 0.963855421686747,
+          "support": 40.0
+        },
+        "rooster": {
+          "precision": 1.0,
+          "recall": 0.95,
+          "f1-score": 0.9743589743589743,
+          "support": 40.0
+        },
+        "rain": {
+          "precision": 0.975,
+          "recall": 0.975,
+          "f1-score": 0.975,
+          "support": 40.0
+        },
+        "sea_waves": {
+          "precision": 1.0,
+          "recall": 0.975,
+          "f1-score": 0.9873417721518988,
+          "support": 40.0
+        },
+        "crackling_fire": {
+          "precision": 1.0,
+          "recall": 0.9,
+          "f1-score": 0.9473684210526315,
+          "support": 40.0
+        },
+        "crying_baby": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "sneezing": {
+          "precision": 0.9302325581395349,
+          "recall": 1.0,
+          "f1-score": 0.963855421686747,
+          "support": 40.0
+        },
+        "clock_tick": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "helicopter": {
+          "precision": 0.9512195121951219,
+          "recall": 0.975,
+          "f1-score": 0.9629629629629629,
+          "support": 40.0
+        },
+        "chainsaw": {
+          "precision": 1.0,
+          "recall": 1.0,
+          "f1-score": 1.0,
+          "support": 40.0
+        },
+        "accuracy": 0.9775,
+        "macro avg": {
+          "precision": 0.9786684628474192,
+          "recall": 0.9775,
+          "f1-score": 0.9774742973899961,
+          "support": 400.0
+        },
+        "weighted avg": {
+          "precision": 0.9786684628474193,
+          "recall": 0.9775,
+          "f1-score": 0.9774742973899962,
+          "support": 400.0
+        }
+      },
+      "predictions_sha256": "ee0c9c546118371c7bc7c6292ce7409f37ee3422251325472512a51c2d1525e9"
+    }
+  },
+  "cross_validation": {
+    "yamnet_transfer": {
+      "per_fold": [
+        {
+          "fold": 1,
+          "correct": 79,
+          "count": 80,
+          "accuracy": 0.9875,
+          "macro_f1": 0.987450980392157
+        },
+        {
+          "fold": 2,
+          "correct": 79,
+          "count": 80,
+          "accuracy": 0.9875,
+          "macro_f1": 0.987450980392157
+        },
+        {
+          "fold": 3,
+          "correct": 76,
+          "count": 80,
+          "accuracy": 0.95,
+          "macro_f1": 0.9495051353874884
+        },
+        {
+          "fold": 4,
+          "correct": 79,
+          "count": 80,
+          "accuracy": 0.9875,
+          "macro_f1": 0.987450980392157
+        },
+        {
+          "fold": 5,
+          "correct": 78,
+          "count": 80,
+          "accuracy": 0.975,
+          "macro_f1": 0.9739495798319329
+        }
+      ],
+      "accuracy_mean": 0.9774999999999998,
+      "accuracy_std_sample": 0.016298006013006662,
+      "macro_f1_mean": 0.9771615312791784,
+      "macro_f1_std_sample": 0.016528847169139448,
+      "aggregate_correct": 391,
+      "aggregate_count": 400,
+      "aggregate_macro_f1": 0.9774742973899961,
+      "single_seed": true,
+      "std_definition": "sample standard deviation over five outer folds, ddof=1"
     }
   }
 }
